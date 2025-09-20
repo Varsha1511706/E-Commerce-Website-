@@ -1,0 +1,1479 @@
+var haptik_version = "v1.5.123";
+// var haptik_version = "v"+(new Date().getTime());
+var debug = "false";
+var buzzo_jQuery;
+var buzzo_screen_type = "";
+var intro_message_shown = false;
+var first_time_initiated = false;
+var haptik_data_passed_from_client = null;
+var hash_buzzo_chat = "#conversation";
+var haptik_blob_url_loader_error_count = 0;
+var haptik_default_iva_icon = "/static/aspectwise/images/tatacliq/icon.svg";
+var voice_first_clients = ["jiomart", "jiobeauty","jiomartmerchant", "jiomartmerchantfull", "hul"];
+var fashion_category = ['apparel', 'shoes', 'shoe', 'watches', 'watch', 'jeans', 'tshirt', 'clothes', 'beauty', 'footwear'];
+var haptik_variables_set = false;
+var haptik_cookies = {
+  user_type: {
+    key: "haptik_user_type",
+    values: ["new", "returning"]
+  },
+  user_pages_visited: "haptik_user_pages_visited",
+  userClosedPrompt: "haptik_user_closed_prompt",
+  userNotificationSoundPlayed: "haptik_user_notification_sound_played"
+};
+var is_buzzo_url_state_set = false;
+var buzzo_main_url;
+/******** Load jQuery if not present *********/
+if (window.jQuery === undefined || window.jQuery.fn.jquery !== '3.6.0') {
+  var buzzo_script_tag = document.createElement('script');
+  buzzo_script_tag.setAttribute("type", "text/javascript");
+  buzzo_script_tag.async = false;
+  buzzo_script_tag.id = "buzzojQuerysource";
+  buzzo_script_tag.setAttribute("src", "https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js");
+  if (buzzo_script_tag.readyState) {
+    buzzo_script_tag.onreadystatechange = function() { // For old versions of IE
+      if (this.readyState == 'complete' || this.readyState == 'loaded') {
+        buzzo_scriptLoadHandler();
+      }
+    };
+  } else {
+    buzzo_script_tag.onload = buzzo_scriptLoadHandler;
+  }
+  // Try to find the head, otherwise default to the documentElement
+  (document.getElementsByTagName("head")[0] || document.documentElement).appendChild(buzzo_script_tag);
+} else {
+  // The jQuery version on the window is the one we want to use
+  buzzo_jQuery = window.jQuery;
+  buzzo_main();
+}
+/******** Called once jQuery has loaded ******/
+// Restore $ and window.jQuery to their previous values and store the
+// new jQuery in our local jQuery variable
+// Call our main function
+// continue_loading_commerce_script = true;
+function buzzo_scriptLoadHandler() {
+  buzzo_jQuery = window.jQuery.noConflict(true);
+  buzzo_main();
+}
+
+function buzzo_mobile_check() {
+  var check = false;
+  (function(a) {
+    if (/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino/i.test(a) || /1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test(a.substr(0, 4))) check = true;
+  })(navigator.userAgent || navigator.vendor || window.opera);
+  return check;
+};
+
+function getCookie(name) {
+  var cookieValue = null;
+  if (document.cookie && document.cookie != '') {
+    var cookies = document.cookie.split(';');
+    for (var i = 0; i < cookies.length; i++) {
+      var cookie = cookies[i].trim();
+      // Does this cookie string begin with the name we want?
+      if (cookie.substring(0, name.length + 1) == (name + '=')) {
+        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+        break;
+      }
+    }
+  }
+  return cookieValue;
+};
+
+function setCookie(key, value, exminutes = 1) {
+  var d = new Date();
+  d.setTime(d.getTime() + (exminutes * 60 * 1000));
+  var expires = "expires=" + d.toUTCString();
+  document.cookie = key.toString() + "=" + value.toString() + ";SameSite=None;Secure; " + expires;
+};
+
+function check_and_set_cookie_if_bot_opened() {
+  if (getCookie(haptik_cookies.user_type.key) == null) {
+    setCookie(haptik_cookies.user_type.key, haptik_cookies.user_type.values[0], 30); // 30 min
+    //return true;
+  }
+  //	return false;
+}
+
+function set_returning_user_if_bot_opened() {
+  if (getCookie(haptik_cookies.user_type.key) != null) {
+    setCookie(haptik_cookies.user_type.key, haptik_cookies.user_type.values[1], 30); // 30 min
+  }
+}
+
+function set_and_increase_pages_visited_count() {
+  if (getCookie(haptik_cookies.user_pages_visited) == null) {
+    setCookie(haptik_cookies.user_pages_visited, "1");
+  } else {
+    var page_count = parseInt(getCookie(haptik_cookies.user_pages_visited)) + 1;
+    setCookie(haptik_cookies.user_pages_visited, page_count.toString(), 60 * 24); // 1 day
+  }
+}
+
+function buzzo_main() {
+  buzzo_jQuery(document).ready(function($) {
+    // var test = new HaptikData();
+    var buzzo_date = new Date();
+    var haptik_script_id = "#buzzosrc";
+    var haptik_assistant_id = "#buzzoassistant";
+    var haptik_iframe_id = "#chatdemo";
+    var haptik_iva_child_class = "haptikivacommerceicon";
+
+    var haptik_dummy_data = {
+      "query": "",
+      "clientId": "tatacliq",
+      "category": "air conditioner",
+      "referer_link": window.location.href,
+      "referer_page_title": null,
+      "productName": null,
+      "productId": null,
+      "voiceFeature": "on",
+      "storeapp": "false",
+      "language": "en",
+      "ab_experiment": "false",
+      "buzzo_remove_option_background": "true",
+      "mode": "widget",
+      "tags": ''
+    };
+
+    //For Getting the highest z-index out in the document
+    var maxZ = 300;
+    var buzzo_client = buzzo_jQuery(haptik_script_id).attr("clientid") || "buzzoai";
+    var buzzo_mode = buzzo_jQuery(haptik_script_id).attr("mode") || "widget";
+    var buzzo_environment = buzzo_jQuery(haptik_script_id).attr("environment") || "production";
+    var isCreatorStudio =
+      buzzo_jQuery(haptik_script_id).attr("isCreatorStudio") || false;
+
+    var buzzo_device = "other";
+    if (buzzo_mobile_check()) {
+      buzzo_device = "mobile";
+    }
+
+    var buzzo_blob_url = buzzo_jQuery(haptik_script_id).attr('src').replace('https://', '').replace('http://', '').split('/')[0];
+
+    if (!buzzo_blob_url.includes('https://') && buzzo_blob_url != "") {
+      buzzo_blob_url = 'https://' + buzzo_blob_url;
+    } else {
+      buzzo_blob_url = 'https://' + window.location.href.replace('https://', '').replace('http://', '').split('/')[0];
+    }
+
+    //buzzo_blob_url = "https://buzzodjangostorage.blob.core.windows.net/production";
+
+    if (buzzo_environment.toLowerCase() == "development") {
+      buzzo_main_url = buzzo_jQuery(haptik_script_id).attr('src').replace('https://', '').replace('http://', '').split('/')[0];
+      if (buzzo_main_url == "") {
+        buzzo_main_url = 'https://' + window.location.href.replace('https://', '').replace('http://', '').split('/')[0];
+      } else {
+        buzzo_main_url = 'https://' + buzzo_main_url;
+      }
+    } else if (buzzo_environment.toLowerCase() == "staging") {
+      buzzo_main_url = "https://staging.haptikapi.net";
+    } else {
+      buzzo_main_url = "https://haptikapi.net";
+    }
+
+    if (buzzo_jQuery(haptik_script_id).attr("environment") == null || buzzo_jQuery(haptik_script_id).attr("environment") == undefined) {
+      if (window.location.href.includes("buzzo.ai")) {
+        buzzo_main_url = buzzo_jQuery(haptik_script_id).attr("src").replace('https://', '').split('/').splice(0, 1)[0];
+      } else if (buzzo_jQuery(haptik_script_id).attr("src").includes("dev.buzzo.ai")) {
+        buzzo_main_url = "https://dev.buzzo.ai";
+      } else {
+        if(buzzo_client.includes("jiomart")) {
+          buzzo_main_url = "https://jiomart-staging.haptikapi.net";
+        } else {
+          buzzo_main_url = "https://staging.haptikapi.net";
+        }
+      }
+    }
+
+    if (window.location.href.includes("staging.haptikapi.net")) {
+      buzzo_main_url = "https://staging.haptikapi.net";
+      buzzo_blob_url = "https://buzzodjangostorage.blob.core.windows.net";
+    } else if (window.location.href.includes("staging.buzzo.ai")) {
+      buzzo_main_url = "https://staging.buzzo.ai";
+      buzzo_blob_url = "https://buzzodjangostorage.blob.core.windows.net";
+    }
+
+    if (window.location.href.includes("test-staging.haptikapi.net")) {
+      buzzo_main_url = "https://test-staging.haptikapi.net";
+      buzzo_blob_url = "https://buzzodjangostorage.blob.core.windows.net";
+    }
+    if (window.location.href.includes("preprod.haptikapi.net")) {
+      buzzo_main_url = "https://preprod.haptikapi.net";
+      buzzo_blob_url = "https://preprod.haptikapi.net";
+    }
+    if (window.location.href.includes("devprod.haptikapi.net")) {
+      buzzo_main_url = "https://devprod.haptikapi.net";
+      buzzo_blob_url = "https://devprod.haptikapi.net";
+    }
+    //jiomart
+    if (window.location.href.includes("jiomart-staging.haptikapi.net")) {
+      buzzo_main_url = "https://jiomart-staging.haptikapi.net";
+      buzzo_blob_url = "https://jiomartdjangostorage.blob.core.windows.net";
+    }
+    if (window.location.href.includes("jiomart-preprod.haptikapi.net")) {
+      buzzo_main_url = "https://jiomart-preprod.haptikapi.net";
+      buzzo_blob_url = "https://jiomartdjangostorage.blob.core.windows.net/preproduction";
+    } else if (window.location.href.includes("jiomart.haptikapi.net")) {
+      buzzo_main_url = "https://jiomart.haptikapi.net";
+      buzzo_blob_url = "https://jiomartdjangostorage.blob.core.windows.net/production";
+    }
+
+    //us cas
+    if (window.location.href.includes("us-staging.haptikapi.net")) {
+      buzzo_main_url = "https://us-staging.haptikapi.net";
+      buzzo_blob_url = "https://haptikusdjangostorage.blob.core.windows.net";
+    }
+    if (window.location.href.includes("us-preproduction.haptikapi.net")) {
+      buzzo_main_url = "https://us-preproduction.haptikapi.net";
+      buzzo_blob_url = "https://haptikusdjangostorage.blob.core.windows.net/preproduction";
+    } else if (window.location.href.includes("us.haptikapi.net")) {
+      buzzo_main_url = "https://us.haptikapi.net";
+      buzzo_blob_url = "https://haptikusdjangostorage.blob.core.windows.net/production";
+    }
+
+    if (window.location.href.includes("singapore-preproduction.haptikapi.net")) {
+      buzzo_main_url = "https://singapore-preproduction.haptikapi.net";
+      buzzo_blob_url = "https://singaporedjangostorage.blob.core.windows.net/preproduction";
+    } else if (window.location.href.includes("singapore-staging.haptikapi.net")) {
+      buzzo_main_url = "https://singapore-staging.haptikapi.net";
+      buzzo_blob_url = "https://singaporedjangostorage.blob.core.windows.net";
+    }else if(window.location.href.includes("singapore.haptikapi.net")) {
+      buzzo_main_url = "https://singapore.haptikapi.net";
+      buzzo_blob_url = "https://singaporedjangostorage.blob.core.windows.net/production";
+    }
+
+    if (buzzo_jQuery(haptik_script_id).attr('src').replace('https://', '').replace('http://', '').split('/')[0].includes('buzzo.ai')) {
+      buzzo_blob_url = 'https://' + buzzo_jQuery(haptik_script_id).attr('src').replace('https://', '').replace('http://', '').split('/')[0];
+      buzzo_main_url = 'https://' + buzzo_jQuery(haptik_script_id).attr('src').replace('https://', '').replace('http://', '').split('/')[0];
+    }
+
+    if (buzzo_jQuery(haptik_script_id).attr('src').replace('https://', '').replace('http://', '').includes('buzzodjangostorage.blob.core.windows.net/production')) {
+      buzzo_blob_url = "https://buzzodjangostorage.blob.core.windows.net/production";
+      buzzo_main_url = "https://haptikapi.net";
+    }
+
+    if (buzzo_jQuery(haptik_script_id).attr('src').replace('https://', '').replace('http://', '').includes('buzzodjangostorage.blob.core.windows.net/static')) {
+      buzzo_blob_url = "https://buzzodjangostorage.blob.core.windows.net";
+      buzzo_main_url = "https://staging.haptikapi.net";
+    }
+    // jiomart
+    if (buzzo_jQuery(haptik_script_id).attr('src').replace('https://', '').replace('http://', '').includes('jiomartdjangostorage.blob.core.windows.net/production')) {
+      buzzo_blob_url = "https://jiomartdjangostorage.blob.core.windows.net/production";
+      buzzo_main_url = "https://jiomart.haptikapi.net";
+    }
+
+    if (buzzo_jQuery(haptik_script_id).attr('src').replace('https://', '').replace('http://', '').includes('jiomartdjangostorage.blob.core.windows.net/static')) {
+      buzzo_blob_url = "https://jiomartdjangostorage.blob.core.windows.net";
+      buzzo_main_url = "https://jiomart-staging.haptikapi.net";
+    }
+
+
+    //us cas
+    if (buzzo_jQuery(haptik_script_id).attr('src').replace('https://', '').replace('http://', '').includes('haptikusdjangostorage.blob.core.windows.net/production')) {
+      buzzo_blob_url = "https://haptikusdjangostorage.blob.core.windows.net/production";
+      buzzo_main_url = "https://us.haptikapi.net";
+    }
+    if (isCreatorStudio) {
+      buzzo_main_url = "https://dev.buzzo.ai";
+      buzzo_blob_url = "https://dev.buzzo.ai";
+    }
+
+    // var css_scripts_to_load = [];
+    //console.log("Setting 1 function to get scripts");
+    // for(i =0; i < css_scripts_to_load.length; i++){
+    // var url = ;
+    //console.log("Url is ",url);
+    var buzzo_css_link = $("<link>", {
+      rel: "stylesheet",
+      type: "text/css",
+      href: buzzo_blob_url + "/static/aspectwise/css/haptik-commerce-chatbot.css?" + haptik_version
+    });
+
+    buzzo_css_link.appendTo('head');
+    //buzzo_jQuery.getScript(url, function() { }, true);
+    //console.log("Getting Buzzo SCript", url);
+    // }
+
+    /*for(i =0; i < js_scripts_to_load.length; i++){
+        	var url = buzzo_blob_url + js_scripts_to_load[i] + haptik_version;
+        	// console.log("Url is ",url);
+
+	        var buzzo_script_tag = document.createElement('script');
+		    buzzo_script_tag.setAttribute("type","text/javascript");
+		    buzzo_script_tag.async = true;
+		    buzzo_script_tag.setAttribute("src", url);
+			(document.getElementsByTagName("head")[0] || document.documentElement).appendChild(buzzo_script_tag);
+			//console.log("Getting Buzzo SCript", url);
+        }*/
+    /******* Load HTML *******/
+
+    var category = "";
+    var geo = null;
+    var language = null;
+    var store_app = null;
+    var buzzo_ab_experiment = null;
+    var initial_voice = null;
+    var buzzo_initial_query = "";
+    var remove_option_background = null;
+    var referer_page_title = null;
+    var haptik_triggers = [];
+
+    var referer_url = window.location.href;
+    var buzzo_product_name = "";
+    var buzzo_product_id = "";
+    var buzzo_banner_id = "";
+    var buzzo_banner_description = "";
+    var buzzo_banner_title = "";
+    var buzzo_location = ""
+    var buzzo_ux_experiment = false;
+
+    var haptik_client_settings = {};
+    var hatpik_client_icon_placement = "center"; //Default Value
+    var haptik_icon_visibility = true; //Default Value
+    var page_type = "demopage";
+
+    var speak_property = "when_spoken_to";
+    var page_title = null;
+    var visit_on_page = 0;
+
+    var open_iframe_widget_first_time = true;
+    var start_flag = false;
+    var delay_time = 1;
+    var scroll_count = 0;
+    var setTimeoutConst;
+    var buzzo_iframeloaded = false;
+
+    var loading_script_first_time = true;
+    var real_time = false;
+    var horizontal_placement = "right";
+    var vertical_placement = "bottom";
+    var placement_class = "right-bottom";
+    var tags = "";
+    var iva_view = "short";
+    var is_voice_first = false;
+    var buzzo_icon_url = buzzo_blob_url + "/static/aspectwise/images/buzzo.png";
+    var iva_name = "Buzzo";
+    var search_criteria = "";
+    var cart_info = [];
+    var results_shown = null;
+    var store_id = "";
+    var pincode = "";
+    var phone_number = "";
+    var session_id = "";
+    var customer_id = "";
+    var merchant_id = "";
+    var session_id_expires_on = "";
+    var buzzo_design_to_implement = "originaldesign";
+    /** initiation_source
+     * is 'creatorstudio' if being called from Creator Studio Self Serve Platform. Used for design changes;
+     * is 'notification' if being called from android or iOS when bot is initialized from notifications. Used mainly for analytics purposes;
+     */
+    var initiation_source = "";
+    /** iva_type
+     * decisional: IVA where full product knowledge is required to make decision before buying. Ex- TATACliq-mobile
+     * transaction: IVA where no in-depth product knowledge is required. Ex- Jiomart-grocery
+     */
+    var iva_type = "";
+    var haptikData = null;
+    var client_initiator_id = null;
+    var apiParams = null;
+    var cartCount = null;
+    var productGroupId = null;
+    var useFineTunedModel = false;
+    var gptModelName = null;
+    var isUserParameter = "";
+    window.instantiate_haptik_variables = function(haptik_initiation_object) {
+      buzzo_iframeloaded = false;
+      speak_property = haptik_initiation_object.speak || "when_spoken_to";
+      buzzo_initial_query = haptik_initiation_object.query || "";
+      initial_voice = haptik_initiation_object.voiceFeature || "on"; // previously iva_voice
+      store_app = haptik_initiation_object.storeapp || "false";
+      language = haptik_initiation_object.language || "en";
+      buzzo_client = haptik_initiation_object.clientId || buzzo_client; // previously client
+      category = haptik_initiation_object.category || "";
+      useFineTunedModel = haptik_initiation_object.useFineTuned || false;
+      gptModelName = haptik_initiation_object.gptModelName || null;
+      isUserParameter = haptik_initiation_object.isUserParameter || "";
+      category = category.toLowerCase();
+      if (category === "refrigerators") {
+        category = "refrigerator";
+      }
+      if (category.includes("tv")) {
+        category = "television";
+      }
+      buzzo_ab_experiment = haptik_initiation_object.ab_experiment || "false";
+      buzzo_product_name = haptik_initiation_object.productName || ""; // previously buzzo_product_name
+      buzzo_product_id = haptik_initiation_object.productId || ""; // previously buzzo_product_id
+      buzzo_banner_id = haptik_initiation_object.bannerId || "";
+      buzzo_location = haptik_initiation_object.location || "";
+      buzzo_banner_title = haptik_initiation_object.bannerTitle || "";
+      buzzo_banner_description = haptik_initiation_object.bannerDescription || "";
+      buzzo_ux_experiment = haptik_initiation_object.uxExperiment || false;
+
+      productGroupId = haptik_initiation_object.productGroupId || null;
+
+      remove_option_background = haptik_initiation_object.buzzo_remove_option_background || "true";
+      buzzo_mode = haptik_initiation_object.mode || buzzo_mode;
+      geo = haptik_initiation_object.geo || "in";
+      real_time = haptik_initiation_object.real_time || false;
+      tags = haptik_initiation_object.tags || "";
+      iva_view = haptik_initiation_object.iva_view || "short";
+      buzzo_auto_mic = haptik_initiation_object.autoMic || "false";
+
+      if (voice_first_clients.includes(buzzo_client)) {
+        is_voice_first = haptik_initiation_object.voice_first || true;
+      } else {
+        is_voice_first = haptik_initiation_object.voice_first || false;
+      }
+      cart_info = haptik_initiation_object.cart || [];
+      results_shown = haptik_initiation_object.resultsShown || null;
+      store_id = haptik_initiation_object.storeId || "";
+      phone_number = haptik_initiation_object.phoneNumber || "";
+      merchant_id = haptik_initiation_object.merchantId || "";
+      session_id_expires_on = haptik_initiation_object.sessionIdExpiresOn || "";
+      pincode = haptik_initiation_object.pincode || "";
+      session_id = haptik_initiation_object.sessionId || "";
+      customer_id = haptik_initiation_object.customerId || "";
+      page_type = haptik_initiation_object.page_type || "demopage";
+      page_title = haptik_initiation_object.pageTitle || null;
+      haptik_data_passed_from_client = haptik_initiation_object;
+      debug = haptik_initiation_object.debug || "false";
+      search_criteria = haptik_initiation_object.searchCriteria || "";
+      client_initiator_id = haptik_initiation_object.initiator_id || "";
+
+      haptikData = haptik_initiation_object.haptikData || {};
+      apiParams = haptik_initiation_object.apiParams || {};
+      cartCount = haptik_initiation_object.cartCount || null;
+      initiation_source = haptikData.initiationsource || haptik_initiation_object.initiationsource || "";
+      iva_type = haptikData.ivatype || "transactional";
+    
+      if(buzzo_client != 'jiomartmerchant') {
+        maxZ = Math.max.apply(null,
+          $.map($('body *'), function(e, n) {
+            return parseInt($(e).css('z-index')) || 1;
+          }));
+      } else {
+        maxZ = 5000;
+      }
+
+      if (buzzo_environment == "development") { //This is incase if the hit is from buzzo dev servers
+        real_time = haptik_initiation_object.real_time || true;
+      }
+      if (!loading_script_first_time) {
+        haptik_variables_set = true;
+      } else {
+        loading_script_first_time = false;
+      }
+      // visit_on_page = increasePageCount();
+    };
+
+    //When the script is loaded
+    set_and_increase_pages_visited_count();
+
+    window.GetHaptikPassedTriggers = function(haptik_triggers) {
+      var applicable_triggers = [];
+      for (i = 0; i < haptik_triggers.length; i++) {
+        //check for page_conditions in link and add the correct conditions
+        if (haptik_triggers[i]["trigger_type"].includes("page type") || haptik_triggers[i]["trigger_type"].includes("entity type")) {
+          //Check for various trigger types
+          if (haptik_triggers[i]["page_type_rule"] != null) {
+            //Check if condition matches if so add to return_data
+            if (referer_url.toLowerCase().includes(haptik_triggers[i]["page_type_rule"]) || haptik_triggers[i]["page_type_rule"] == "all") {
+              applicable_triggers.push(haptik_triggers[i]);
+              // console.log("Got Applicable Tigger",haptik_triggers[i]);
+            }
+          }
+          if (haptik_triggers[i]["entity_type_rule"] != null) {
+            //Check if condition matches if so add to return_data
+            if (referer_url.toLowerCase().includes(haptik_triggers[i]["entity_type_rule"])) {
+              applicable_triggers.push(haptik_triggers[i]);
+            }
+          }
+        }
+
+        if (haptik_triggers[i]["trigger_type"].toLowerCase().includes("idle") || haptik_triggers[i]["trigger_type"].toLowerCase().includes("scroll")) {
+          applicable_triggers.push(haptik_triggers[i]);
+        }
+      }
+      return applicable_triggers;
+    };
+
+    window.ParseClientSettingsJson = function(client_iva_settings) {
+      if (client_iva_settings.hasOwnProperty(buzzo_mode.toLowerCase())) {
+        if (client_iva_settings[buzzo_mode].hasOwnProperty("triggers")) {
+          haptik_triggers = GetHaptikPassedTriggers(client_iva_settings[buzzo_mode]["triggers"]); //add .triggers in the latest settings
+        }
+      }
+
+      haptik_client_icon_placement_object = client_iva_settings.iva_placement || {
+        "position": {
+          "horizontal": "right",
+          "vertical": "bottom"
+        }
+      }; //Need to add placement settings
+      haptik_icon_visibility = haptik_client_icon_placement_object.iva_visibility || "on"; //Visibility Setting
+      if (buzzo_device == "mobile" || buzzo_screen_type == "small" || $(window).width() < 768 || !voice_first_clients.includes(buzzo_client)) {
+        if (haptik_client_icon_placement_object.hasOwnProperty("position")) {
+          horizontal_placement = haptik_client_icon_placement_object["position"]["horizontal"];
+          vertical_placement = haptik_client_icon_placement_object["position"]["vertical"];
+        }
+      }
+
+      if (horizontal_placement == "right" && vertical_placement == "bottom") {
+        placement_class = "right-bottom";
+      } else if (horizontal_placement == "middle" && vertical_placement == "bottom") {
+        placement_class = "center-bottom";
+      } else if (horizontal_placement == "left" && vertical_placement == "bottom") {
+        placement_class = "left-bottom";
+      } else {
+        placement_class = "right-bottom";
+      }
+
+      haptik_default_iva_icon = "/static/aspectwise/images/" + buzzo_client + "/icon.svg";
+      buzzo_icon_url = haptik_client_icon_placement_object.iva_icon || haptik_default_iva_icon;
+      buzzo_icon_url = buzzo_blob_url + buzzo_icon_url;
+      iva_name = haptik_client_icon_placement_object.iva_name || "Default";
+
+      if (haptik_icon_visibility.toLowerCase() == "on") {
+        check_and_set_cookie_if_bot_opened();
+        //Call buildChatWidget to create the widget.
+        buildChatWidget(buzzo_client, category);
+      } else {
+        return null;
+      }
+      //Also Call For Window Location URL implementation
+      if (!is_buzzo_url_state_set) {
+        setHaptikBuzzoUrlStates();
+      }
+    };
+
+    window.CallClientSettingsJson = function() {
+      var client_name = buzzo_client;
+      CallSettingsAjax(client_name);
+    };
+
+    window.CallSettingsAjax = function(client_name) {
+      var source_url = buzzo_blob_url + "/static/aspectwise/client_settings/" + client_name + "_settings.json";
+      buzzo_jQuery.ajax({
+        url: source_url,
+        dataType: "jsonp",
+        statusCode: {
+          404: function() {
+            haptik_blob_url_loader_error_count += 1;
+            if (haptik_blob_url_loader_error_count >= 2) {
+              ParseClientSettingsJson({});
+            } else {
+              CallSettingsAjax("default");
+            }
+          }
+        }
+      });
+    };
+
+    window.GetHaptikClientSettings = function(haptik_initiation_object) {
+      instantiate_haptik_variables(haptik_initiation_object);
+      CallClientSettingsJson();
+    };
+
+    history.pushState = function(f) {
+      return function pushState() {
+        var ret = f.apply(this, arguments);
+        window.dispatchEvent(new CustomEvent("pushState"));
+        window.dispatchEvent(new CustomEvent("locationchange"));
+        return ret;
+      };
+    }(history.pushState);
+
+    history.replaceState = function(f) {
+      return function replaceState() {
+        var ret = f.apply(this, arguments);
+        window.dispatchEvent(new CustomEvent("replaceState"));
+        window.dispatchEvent(new CustomEvent("locationchange"));
+        return ret;
+      };
+    }(history.replaceState);
+
+    window.addEventListener("popstate", function() {
+      window.dispatchEvent(new CustomEvent("locationchange"));
+    });
+
+    window.setHaptikBuzzoUrlStates = function() {
+      var currentURL = "";
+      var oldURL = "";
+
+      oldURL = window.location.href;
+      window.addEventListener('locationchange', function(e) {
+        if (currentURL != "") {
+          oldURL = currentURL;
+        }
+        currentURL = window.location.href;
+        var real_location_changed = true;
+        if (oldURL.includes(hash_buzzo_chat)) {
+          real_location_changed = false;
+        }
+        if (currentURL.includes(hash_buzzo_chat)) {
+          real_location_changed = false;
+        } else {
+          if (oldURL.includes(hash_buzzo_chat)) {
+            if (oldURL.replace(hash_buzzo_chat, "") != currentURL) {
+              real_location_changed = true;
+            } else {
+              real_location_changed = false;
+            }
+          }
+        }
+
+        if (real_location_changed == true) {
+          if ((buzzo_mode.toLowerCase() == "widget" || buzzo_mode.toLowerCase() == "banner") && !voice_first_clients.includes(buzzo_client)) {
+            //Here we need to Reinitiate the Chat Widget
+            //Remove All the Created Elements and re instantiate global variables
+            $(haptik_assistant_id).remove();
+            $(haptik_iframe_id).remove();
+            // $("#buzzooverlay").remove();
+            haptik_variables_set = false;
+            buzzo_iframeloaded = false;
+            buzzo_overlay_clicked_count = 0;
+            set_and_increase_pages_visited_count();
+            //On Url Change Setting the pages visited count
+            //console.log("removing widget");
+            //GetHaptikClientSettings(haptik_data_passed_from_client);
+            //The above function should either be called from client side with the parameters
+          }
+        }
+      });
+
+      is_buzzo_url_state_set = true;
+    };
+
+    window.buildChatWidget = function() {
+      //This function encapsultes the building part of chatbot including the placement and passing the trigger prompts depending upon the values
+      //received in the settings client.
+      start_flag = true;
+      createHaptikChatElement("build and set trigger");
+      createChatIVAIframe("build");
+      if (voice_first_clients.includes(buzzo_client)) {
+        createChatIVABackgroundLayer("build");
+      }
+    };
+
+    //Need to check for user type condition and number of pages visited
+    //if first_time_viewing_bot add to cookie, also increase the number of pages visited
+    //1 on script load and 1 if url changes (to also include react websites)
+    //Will later add condition to pages visited based on category
+    window.setTriggerPrompts = function(haptik_responses) {
+      for (var i = 0; i < haptik_responses.length; i++) {
+        if (getCookie(haptik_cookies.user_type.key) == haptik_responses[i]["user_type"] &&
+          parseInt(getCookie(haptik_cookies.user_pages_visited)) >= 0 /*haptik_responses[i]["pages_visited"]*/ ) {
+          if (haptik_responses[i]["trigger_type"] == "idle" || haptik_responses[i]["trigger_type"] == "entity type" || haptik_responses[i]["trigger_type"] == "page type") {
+            delay_time = haptik_responses[i]["delay_time"];
+            buzzo_intro_message = haptik_responses[i]["trigger_message"];
+            var time_on_page = haptik_responses[i]["time_on_page"];
+            var time_to_hide_after = haptik_responses[i]["time_to_hide_after"];
+            set_intro_message(buzzo_intro_message, parseInt(delay_time) + parseInt(time_on_page), parseInt(time_to_hide_after));
+          }
+
+          if (haptik_responses[i]["trigger_type"] == "scroll") {
+            delay_time = haptik_responses[i]["delay_time"];
+            buzzo_intro_message = haptik_responses[i]["trigger_message"];
+            var time_on_page = haptik_responses[i]["time_on_page"];
+            var time_to_hide_after = haptik_responses[i]["time_to_hide_after"];
+            var pages_to_scroll = parseInt(haptik_responses[i]["page_scrolled"]);
+            scroll_user(buzzo_intro_message, parseInt(delay_time), parseInt(time_to_hide_after), pages_to_scroll, time_on_page);
+          }
+        }
+      }
+    };
+
+    window.open_haptik_chat_iva = function(haptik_initiation_object) {
+      //Open ChatBot Programmatically passing the parameters required.
+      if (!haptik_variables_set || buzzo_client === 'jiomartmerchant') {
+        instantiate_haptik_variables(haptik_initiation_object);
+        // createChatIVABackgroundLayer("build");
+        haptik_variables_set = true;
+        check_and_set_cookie_if_bot_opened();
+        if (!is_buzzo_url_state_set) {
+          setHaptikBuzzoUrlStates();
+        }
+        createChatIVAIframe("openiframe");
+      } else {
+        open_iframe_widget();
+      }
+    };
+    window.setIframeURL = function() {
+      if (!buzzo_iframeloaded) {
+        var src_url = buzzo_main_url + "/haptik-commerce-bot?";
+        src_url += "client=" + buzzo_client;
+        src_url += "&speak=" + speak_property;
+        src_url += "&query=" + buzzo_initial_query.replace("&", " and ");
+        src_url += "&abexperiment=" + buzzo_ab_experiment;
+        src_url += "&channel=" + buzzo_mode;
+        src_url += "&voice=" + initial_voice;
+        src_url += "&buzzodevice=" + buzzo_device;
+        src_url += "&category=" + category;
+        src_url += "&removeoptionbackground=" + remove_option_background;
+        src_url += "&geo=" + geo;
+        src_url += "&language=" + language;
+        src_url += "&realtime=" + real_time;
+        src_url += "&tags=" + tags;
+        src_url += "&storeapp=" + store_app;
+        src_url += "&referer=" + encodeURIComponent(window.location.href);
+        src_url += "&haptikversion=" + haptik_version;
+        src_url += "&view=" + iva_view;
+        src_url += "&voicefirst=" + is_voice_first;
+        src_url += "&productname=" + buzzo_product_name;
+        src_url += "&productid=" + buzzo_product_id;
+        src_url += "&searchcriteria=" + search_criteria.replace("&", " and ");
+        src_url += "&pagetype=" + page_type;
+        src_url += "&posterid=" + buzzo_banner_id;
+        src_url += "&posterdescription=" + buzzo_banner_description;
+        src_url += "&postertitle=" + buzzo_banner_title;
+        src_url += "&cart=" + JSON.stringify(cart_info);
+
+        src_url += "&resultsshown=" + JSON.stringify(results_shown);
+        src_url += "&storeid=" + store_id;
+        src_url += "&phonenumber=" + phone_number;
+        src_url += "&merchantid=" + merchant_id;
+        src_url += "&sessionidexpireson=" + session_id_expires_on;
+
+        src_url += "&pincode=" + pincode;
+        src_url += "&customerid=" + customer_id;
+        src_url += "&sessionid=" + session_id;
+        src_url += "&uxexperiment=" + buzzo_ux_experiment;
+        src_url += "&automic=" + buzzo_auto_mic;
+        src_url += "&haptikdata=" + JSON.stringify(haptikData);
+        src_url += "&apiparams=" + JSON.stringify(apiParams);
+        src_url += "&cartcount=" + cartCount;
+
+        src_url += "&productgroupid=" + productGroupId;
+
+        src_url += "&location=" + buzzo_location;
+
+        src_url += "&ft=" + useFineTunedModel;
+        src_url += "&model=" + gptModelName;
+        src_url += "&is_user=" + isUserParameter;
+
+        if (debug.toLowerCase() == "true") {
+          src_url += "&debug=" + debug;
+        }
+        $(haptik_iframe_id).attr("src", src_url);
+
+        buzzo_iframeloaded = true;
+        return true;
+      }
+    };
+
+    window.addchatIVAClickListener = function(buzzo_element) {
+      buzzo_element.addEventListener("click", function() {
+        // console.log("Clicked Element ",buzzo_element);
+        if ($(this).attr("data-query") != undefined && $(this).attr("data-query") != null && $(this).attr("data-query") != "") {
+          buzzo_initial_query = $(this).attr("data-query");
+          // console.log("Setting Query to ",$(this).attr("data-query"));
+        } else if (buzzo_design_to_implement != "originaldesign" && page_type.toLowerCase() == "pdp" && (['tatacliq', 'tatacliqnew'].indexOf(buzzo_client.toLowerCase()) > -1)) {
+          // In case of fashion category for tatacliq, change the initial query
+          if(fashion_category.includes(category)) {
+            buzzo_initial_query = "Tell me about it.";
+          } else {
+            buzzo_initial_query = "Is it right for me?";
+          }
+        }
+
+        if (setIframeURL()) {
+          set_returning_user_if_bot_opened();
+        }
+        buzzo_assistant_functionality();
+        if (buzzo_screen_type == "small") {
+          buzzo_disable_scroll();
+        }
+        if (buzzo_design_to_implement != "originaldesign" && page_type.toLowerCase() == "pdp" && (['tatacliq', 'tatacliqnew'].indexOf(buzzo_client.toLowerCase()) > -1)) {
+          var frame = document.getElementById("chatdemo");
+          if (frame != undefined && frame != null && frame.src != "") {
+            var paramJSON = {}
+            if (["", "None", "null", null].indexOf(buzzo_product_id) < 0) {
+              paramJSON["sku"] = buzzo_product_id;
+            }
+            try {
+              raiseHaptikEvent({
+                "additional_params": paramJSON,
+                "event_name": "@internal_send_text_message",
+                "user_query": buzzo_initial_query,
+                "user_action": "click"
+              })
+              // frame.contentWindow.newMessageSentText(buzzo_initial_query, "click", paramJSON,null);
+            } catch (e) {}
+          }
+        }
+      }, false);
+    };
+
+    var buzzo_overlay_clicked_count = 0;
+
+    window.removeChatIVA = function(buzzo_overlay_background) {
+      buzzo_overlay_background.addEventListener("click", function() {
+        $(haptik_assistant_id).attr("data-clicked", "false");
+        $(".showassistant").removeClass("buzzo-hide");
+        if (voice_first_clients.includes(buzzo_client)) {
+          $('.buzzooverlayscreen').addClass("buzzo-hide");
+        }
+        var state = {};
+        var newUrl = window.location.href;
+        if (window.location.href.includes(hash_buzzo_chat)) {
+          newUrl = window.location.href.split(hash_buzzo_chat)[0];
+        }
+        if (navigator.userAgent.search("Firefox") > -1) {
+          window.history.pushState(state, document.title, newUrl);
+        } else {
+          try {
+            window.history.back();
+          } catch (err) {}
+        }
+        $(haptik_iframe_id).addClass("buzzo-hide");
+        buzzo_overlay_clicked_count += 1;
+      }, false);
+    };
+
+    var buzzo_do_once = true;
+
+    window.buzzo_assistant_functionality = function() {
+      if (buzzo_do_once == true) {
+        buzzo_do_once = false;
+        if (buzzo_design_to_implement != "actionpromptdesign") {
+          $(".intro_message_prompt").addClass("buzzo-hide");
+          //Add For Design 2
+        }
+
+        $(haptik_assistant_id).attr("data-clicked", "true");
+        if (buzzo_design_to_implement != "actionpromptdesign") {
+          $(".showassistant").addClass("buzzo-hide");
+        }
+
+        if (buzzo_mode == "banner") {
+          $(haptik_iframe_id).addClass("buzzo-hide");
+        } else {
+          $(haptik_iframe_id).removeClass("buzzo-hide");
+        }
+        if (voice_first_clients.includes(buzzo_client)) {
+          $('.buzzooverlayscreen').removeClass("buzzo-hide");
+        }
+        var replaceUrl = RegExp(hash_buzzo_chat, "g");
+        var newUrl = window.location.href.replace(replaceUrl, '') + (buzzo_client === 'jiomartmerchant'?'':hash_buzzo_chat);
+        window.history.pushState(state, document.title, newUrl);
+      } else if ($(haptik_assistant_id).attr("data-clicked") == "false") {
+        $(haptik_assistant_id).attr("data-clicked", "true");
+        var state = {};
+        var replaceUrl = RegExp(hash_buzzo_chat, "g");
+        var newUrl = window.location.href.replace(replaceUrl, '') + (buzzo_client === 'jiomartmerchant'?'':hash_buzzo_chat);
+        window.history.pushState(state, document.title, newUrl);
+        if (buzzo_design_to_implement != "actionpromptdesign") {
+          $(".showassistant").addClass("buzzo-hide");
+        }
+        $(haptik_iframe_id).removeClass("buzzo-hide");
+        if (voice_first_clients.includes(buzzo_client)) {
+          $('.buzzooverlayscreen').removeClass("buzzo-hide");
+        }
+      } else {
+        $(haptik_assistant_id).attr("data-clicked", "false");
+        var state = {};
+        var newUrl = window.location.href;
+        if (window.location.href.includes(hash_buzzo_chat)) {
+          newUrl = window.location.href.split(hash_buzzo_chat)[0];
+        }
+        window.history.pushState(state, document.title, newUrl);
+
+        // if(buzzo_message_received == false){
+        //	// window.location.href = newUrl;
+        // }
+        $(haptik_iframe_id).addClass("buzzo-hide");
+        if (buzzo_design_to_implement != "actionpromptdesign") {
+          $(".showassistant").removeClass("buzzo-hide");
+        }
+        if (voice_first_clients.includes(buzzo_client)) {
+          $('.buzzooverlayscreen').addClass("buzzo-hide");
+        }
+      }
+    };
+    window.createHaptikChatElement = function(action_to_do) {
+      //CHeck if voice first / jiomart client original design
+      //Check if category is part of new design
+      if (document.getElementsByClassName("haptikivacommerceicon").length != 0) {
+        return false
+      }
+      if (['tatacliq', 'tatacliqnew'].indexOf(buzzo_client.toLowerCase()) > -1) {
+        buzzo_design_to_implement = "actionpromptdesign";
+      } else {
+        buzzo_design_to_implement = "originaldesign";
+      }
+      // buzzo_design_to_implement = "originaldesign";
+      // haptik_assistant_id += buzzo_design_to_implement;
+      if (buzzo_design_to_implement == "actionpromptdesign" || (initiation_source === 'creatorstudio')) {
+        createHaptikChatElementPromptDesign(action_to_do);
+      } else {
+        createHaptikChatElementOriginalDesign(action_to_do);
+      }
+      if (typeof(preloadJsAndCssFiles) == "function")
+        preloadJsAndCssFiles();
+    };
+    window.createHaptikChatElementOriginalDesign = function(action_to_do) {
+      var buzzo_intro_message = "";
+      //This function creates the haptik chat iva elements
+      var buzzo_element = document.createElement('div');
+      buzzo_element.id = haptik_assistant_id.replace('#', "");
+      buzzo_element.className = "buzzo-original-design " + haptik_iva_child_class + " haptik-" + buzzo_client;
+      buzzo_element.setAttribute("data-clicked", "false");
+      var buzzo_style_assistant_background = "background-color: #38679c;";
+      if (buzzo_client != "buzzoai") {
+        buzzo_style_assistant_background = "";
+      }
+      if (!voice_first_clients.includes(buzzo_client)) {
+        buzzo_icon_url = buzzo_blob_url + '/static/aspectwise/images/' + buzzo_client + '/widget.svg';
+      }
+      var buzzo_error_icon = buzzo_blob_url + '/static/aspectwise/images/icon.svg';
+
+      var buzzo_image_html = '<img class="' + haptik_iva_child_class + '" src="' + buzzo_icon_url;
+      buzzo_image_html += '"  alt="' + iva_name + '" onerror="this.src=\'' + buzzo_error_icon + '\'">';
+
+      var buzzo_inner_html = '<div class="intro_message_prompt ';
+      buzzo_inner_html += placement_class + " " + haptik_iva_child_class + '" ';
+      buzzo_inner_html += ' " style="display:none">';
+      buzzo_inner_html += '<h3 class="buzzo_intro_text ' + haptik_iva_child_class + '">';
+      buzzo_inner_html += buzzo_intro_message;
+      buzzo_inner_html += '</h3>';
+      buzzo_inner_html += '<img src="' + buzzo_blob_url + '/static/aspectwise/images/close.svg" ';
+      buzzo_inner_html += 'onclick="event.stopPropagation();document.getElementsByClassName(\'intro_message_prompt\')[0].classList.add(\'buzzo-hide\');"/>';
+      buzzo_inner_html += '</div>';
+
+      buzzo_inner_html += '<div class="showassistant ';
+      buzzo_inner_html += placement_class + " " + haptik_iva_child_class;
+      buzzo_inner_html += '" id="buzzoiconassistant" ';
+      buzzo_inner_html += 'style="' + buzzo_style_assistant_background;
+      buzzo_inner_html += ';z-index:' + (maxZ + 1) + ' !important;">';
+      buzzo_inner_html += buzzo_image_html;
+      buzzo_inner_html += '</div>';
+      buzzo_element.innerHTML = buzzo_inner_html;
+      if (initiation_source !== 'creatorstudio' || (initiation_source === 'creatorstudio' && window.location.pathname.indexOf('test-iva') > -1)) {
+        addElementTobody(buzzo_element, action_to_do);
+        addchatIVAClickListener(buzzo_element);
+      }
+    };
+
+    window.createHaptikChatElementPromptDesign = function(action_to_do) {
+      var buzzo_intro_message = "";
+      //This function creates the haptik chat iva elements
+      var buzzo_element = document.createElement('div');
+      buzzo_element.id = haptik_assistant_id.replace('#', "");
+
+      buzzo_element.className = "buzzo-prompt-design " + haptik_iva_child_class + " haptik-" + buzzo_client;
+      buzzo_element.setAttribute("data-clicked", "false");
+      buzzo_element.style.zIndex = maxZ + 1;
+      var buzzo_style_assistant_background = "background-color: #38679c;";
+      if (buzzo_client != "buzzoai") {
+        buzzo_style_assistant_background = "";
+      }
+
+      buzzo_icon_url = buzzo_blob_url + '/static/aspectwise/images/' + buzzo_client + '/chat-bubble-icon.svg';
+      // Uncomment once chat bubble icon issue is resolved
+      //			var buzzo_image_html = '<img class="' + haptik_iva_child_class + '" src="' + buzzo_icon_url;
+      //			buzzo_image_html += '"  alt="' + iva_name + '">';
+
+      var buzzo_inner_html = '<div class="buzzo-close-wrapper" ';
+      buzzo_inner_html += (initiation_source === 'creatorstudio') ? '' : ' style="display:none" '
+      buzzo_inner_html += 'onclick="event.stopPropagation();setCookie(haptik_cookies.userClosedPrompt, true, 30);if(document.getElementsByClassName(\'intro_message_prompt\').length > 0) {document.getElementsByClassName(\'intro_message_prompt\')[0].classList.add(\'buzzo-hide\');} if(document.getElementsByClassName(\'buzzo-close-wrapper\').length>0){document.getElementsByClassName(\'buzzo-close-wrapper\')[0].classList.add(\'buzzo-hide\');}if(document.getElementsByClassName(\'actionitems\').length > 0){document.getElementsByClassName(\'actionitems\')[0].classList.add(\'buzzo-hide\');}"/>';
+
+      buzzo_inner_html += '<span id="onerror-show-cross" ';
+      buzzo_inner_html += (['tatacliq', 'tatacliqnew'].indexOf(buzzo_client.toLowerCase()) > -1) ?'':' class="buzzo-hide" ';
+      buzzo_inner_html += ' style="font-family: sans-serif;margin: auto;color: #969393;font-weight: 300;">x</span>';
+      buzzo_inner_html += '<img src="' + buzzo_blob_url + '/static/aspectwise/images/close.svg" ';
+      buzzo_inner_html += (['tatacliq', 'tatacliqnew'].indexOf(buzzo_client.toLowerCase()) > -1)?' class="buzzo-hide" ':'';
+      buzzo_inner_html += 'onerror="$(this).remove(); if($(\'#onerror-show-cross\')){$(\'#onerror-show-cross\').removeClass(\'buzzo-hide\')}" /></div>';
+
+      buzzo_inner_html += '<div class="intro_message_prompt ';
+      buzzo_inner_html += placement_class + " " + haptik_iva_child_class + '" ';
+      buzzo_inner_html += (initiation_source === 'creatorstudio') ? '' : ' style="display:none"';
+      buzzo_inner_html += '>';
+      buzzo_inner_html += '<h3 class="buzzo_intro_text ' + haptik_iva_child_class + '" ';
+      if (initiation_source === 'creatorstudio') {
+        buzzo_inner_html += 'style="flex-direction: column;align-items: flex-end;">';
+        buzzo_inner_html += "<p style='font-size:13px;color:#464646;font-weight: 400;margin:0px;'>Hi 👋 click here to test</p> ";
+        buzzo_inner_html += "<p style='font-size:14px;color:#464646;font-weight: 700;margin:0px;font-family:\"Proxima Nova\";'>" + buzzo_client;
+        buzzo_inner_html += " <span style='font-size:13px;color:#464646;font-weight: 400;margin:0px;'>Bot</span> " + "</p>";
+      } else {
+        buzzo_inner_html += '>' + buzzo_intro_message;
+      }
+
+      buzzo_inner_html += '</h3>';
+      buzzo_inner_html += '</div>';
+      if (page_type.toLowerCase() == "pdp") {
+        buzzo_inner_html += '<div class="actionitems" style="display:none">';
+        buzzo_inner_html += '</div>';
+      }
+
+      buzzo_inner_html += '<div ';
+      buzzo_inner_html += 'class="showassistant ' + placement_class + " " + haptik_iva_child_class + '" ';
+      buzzo_inner_html += 'id="buzzoiconassistant" ';
+      if (initiation_source == "creatorstudio") {
+        buzzo_inner_html += 'style="' + buzzo_style_assistant_background + ';height:60px;width:60px;border-radius:50%;padding:0px;box-shadow:1px 4px 15px rgb(1 1 1 / 35%);background-color:#000;"';
+        buzzo_inner_html += '>';
+        buzzo_inner_html += "<img src='" + buzzo_blob_url + '/static/aspectwise/images/icon.svg' + "' style='width:40px; margin:auto;'/>";
+      } else {
+        buzzo_inner_html += 'style="' + buzzo_style_assistant_background + ';"';
+        buzzo_inner_html += '>';
+        //			buzzo_inner_html += buzzo_image_html;
+        buzzo_inner_html += '<div class="helpmessage">May I<span>&nbsp;Help?</span></div>';
+      }
+
+      buzzo_inner_html += '</div>';
+      buzzo_element.innerHTML = buzzo_inner_html;
+      if (initiation_source !== 'creatorstudio' || (initiation_source === 'creatorstudio' && window.location.pathname.indexOf('test-iva') > -1)) {
+        addElementTobody(buzzo_element, action_to_do);
+        addchatIVAClickListener(document.getElementsByClassName('intro_message_prompt')[0]);
+        addchatIVAClickListener(document.getElementsByClassName('showassistant')[0]);
+      }
+    };
+
+    window.createChatIVAIframe = function(action_to_do) {
+      if (document.getElementsByClassName("buzzochatdemo").length != 0) {
+        return false;
+      }
+      var buzzo_element_iframe = document.createElement('iframe');
+      buzzo_element_iframe.id = haptik_iframe_id.replace("#", "");
+      buzzo_element_iframe.setAttribute('data-client', buzzo_client);
+      buzzo_element_iframe.setAttribute('data-opened-timestamp', Date.now());
+      buzzo_element_iframe.style.zIndex = maxZ + 2;
+      if(buzzo_client == "jiomartmerchant") {
+        // for web IVA as header and navigation bar of jiomart merchant is at index 30
+        buzzo_element_iframe.style.zIndex = maxZ + 30;
+      }
+      if (buzzo_screen_type != "small" && buzzo_client == "jio") {
+        buzzo_element_iframe.classList.add('buzzochattabletviewdemo', 'buzzo-hide');
+      } else {
+        buzzo_element_iframe.classList.add('buzzochatdemo', 'buzzo-hide');
+        if (is_voice_first.toString().toLowerCase() == "false" && (['tatacliq', 'tatacliqnew'].indexOf(buzzo_client.toLowerCase()) > -1)) {
+          buzzo_element_iframe.classList.add('hovering-height');
+        }
+        if (buzzo_client.trim().toLowerCase() == "gamestop") {
+          buzzo_element_iframe.classList.add('add-border');
+        }
+        if (voice_first_clients.includes(buzzo_client)) {
+          // console.log("Adding minimized Height");
+          buzzo_element_iframe.classList.add('minimized-height');
+        }
+      }
+      if(client_initiator_id && !buzzo_mobile_check()) {
+        var client_initiator_div = document.getElementById(client_initiator_id).getBoundingClientRect();
+        buzzo_element_iframe.style.top = (client_initiator_div.y + client_initiator_div.height + 20) + 'px';
+        buzzo_element_iframe.style.left = (client_initiator_div.x - 180) + 'px';
+      }
+
+      buzzo_element_iframe.setAttribute("allow", "microphone; autoplay");
+      if (initiation_source !== 'creatorstudio' || (initiation_source === 'creatorstudio' && window.location.pathname.indexOf('test-iva') > -1)) {
+        addElementTobody(buzzo_element_iframe, action_to_do);
+      }
+    };
+
+    window.createChatIVABackgroundLayer = function(action_to_do) {
+      var buzzo_overlay_background = document.createElement("div");
+      buzzo_overlay_background.style.zIndex = maxZ + 1;
+      buzzo_overlay_background.classList.add('buzzooverlayscreen', "buzzo-hide", buzzo_client);
+      buzzo_overlay_background.id = "buzzooverlay";
+      if (initiation_source !== 'creatorstudio' || (initiation_source === 'creatorstudio' && window.location.pathname.indexOf('test-iva') > -1)) {
+        addElementTobody(buzzo_overlay_background, action_to_do);
+      }
+      removeChatIVA(buzzo_overlay_background);
+    };
+
+    window.open_iframe_widget = function() {
+      if (setIframeURL()) {
+        set_returning_user_if_bot_opened();
+      }
+      if ($(haptik_iframe_id).hasClass("buzzo-hide")) {
+        $(haptik_iframe_id).removeClass("buzzo-hide");
+        $(haptik_iframe_id).css({
+          "display": "block"
+        });
+        $(haptik_iframe_id).attr('data-opened-timestamp', Date.now());
+
+        if (voice_first_clients.includes(buzzo_client)) {
+          $('.buzzooverlayscreen').removeClass("buzzo-hide");
+        }
+
+        var state = {};
+        if (!window.location.href.includes(hash_buzzo_chat)) {
+          var newUrl = window.location.href + (buzzo_client === 'jiomartmerchant'?'':hash_buzzo_chat);
+          window.history.pushState(state, document.title, newUrl);
+        }
+        if (buzzo_screen_type == "small") {
+          buzzo_disable_scroll();
+          //alert("scroll disabled");
+        }
+      } else {
+        var lastOpenedTime = parseInt($(haptik_iframe_id).attr('data-opened-timestamp'));
+        var currentCloseTime = Date.now();
+        if(!isNaN(lastOpenedTime) && ((lastOpenedTime + 500) > currentCloseTime)) return;
+        
+        var state = {};
+        var newUrl = window.location.href;
+        if (window.location.href.includes(hash_buzzo_chat)) {
+          newUrl = window.location.href.split(hash_buzzo_chat)[0];
+        }
+        window.history.pushState(state, document.title, newUrl);
+        $(haptik_iframe_id).addClass("buzzo-hide");
+        $(haptik_iframe_id).css({
+          "display": "none"
+        });
+
+        //buzzo_assistant_functionality();
+        if (buzzo_screen_type == "small") {
+          buzzo_enable_scroll();
+          //alert("scroll enabled");
+        }
+        if (voice_first_clients.includes(buzzo_client)) {
+          $('.buzzooverlayscreen').addClass("buzzo-hide");
+        }
+
+      }
+    };
+
+    window.addElementTobody = function(buzzo_element, action_to_do) {
+      //This function adds the lements to the dody of the page.
+      $('body').append(buzzo_element);
+      if (action_to_do == "openiframe") {
+        open_iframe_widget();
+      } else if (action_to_do == "build and set trigger") {
+        setTriggerPrompts(haptik_triggers);
+      }
+    };
+
+    function scroll_user(buzzo_intro_message, delay_time, time_to_hide_after, pages_to_scroll, time_on_page) {
+      var doc_height = $(window).height();
+      window.onscroll = function(e) {
+        var scrolled = $(window).scrollTop();
+        if (scrolled >= doc_height) {
+          var user_time_page = new Date().getTime();
+          var time_diff = parseInt(user_time_page - buzzo_date.getTime());
+          if (time_diff >= 10000) {
+            scroll_count += 1;
+            if (scroll_count == pages_to_scroll) {
+              set_intro_message(buzzo_intro_message, delay_time, time_to_hide_after);
+            }
+          }
+        }
+      };
+    }
+
+    function buzzotitleCase(str) {
+      str = str.toLowerCase().split(' ');
+      for (var i = 0; i < str.length; i++) {
+        str[i] = str[i].charAt(0).toUpperCase() + str[i].slice(1);
+      }
+      return str.join(' ');
+    }
+
+    function set_intro_message(buzzo_intro_message, delay_time, time_to_hide_after) {
+      var buzzo_audio = new Audio('https://toolassets.haptikapi.com/js-sdk/sound/notification_new.mp3');
+      // console.log("Entered Set INtro Message");
+      if (buzzo_design_to_implement == "actionpromptdesign") {
+        delay_time = 8; // Remove this later and change in the triggers csv
+        buzzo_audio.load();
+      }
+
+      setTimeoutConst = setTimeout(function(buzzo_audio) {
+        if (!intro_message_shown) {
+          var play_sound = getCookie(haptik_cookies.user_type.key) != null && getCookie(haptik_cookies.user_type.key) == "returning" ? false : true && getCookie(haptik_cookies.userClosedPrompt) == null && getCookie(haptik_cookies.userNotificationSoundPlayed) == null;
+          if((['tatacliq', 'tatacliqnew'].indexOf(buzzo_client.toLowerCase()) > -1)) {
+            if (page_type.toLowerCase() == "pdp" && !fashion_category.includes(category)) {
+              buzzo_intro_message = "Hi, I am Cliq Genie. I can answer any of the below questions and more!";
+              // if (!play_sound){
+              // buzzo_intro_message = "Hi, I am Cliq Genie. How can i help you with this <b>"+ buzzotitleCase(category) +"</b>?";
+              // }
+            } else {
+              // if(category != undefined && category != ""){
+              // buzzo_intro_message = "Hi I am CLiQ Genie. Tell me what you need and I will help you find the best "+ buzzotitleCase(category)+".";
+              // }else{
+              buzzo_intro_message = "Hi I am CLiQ Genie. Tell me what you need and I will find what's best for you.";
+              // }
+            }
+          }
+
+          if (buzzo_design_to_implement == "actionpromptdesign") {
+            $(".buzzo_intro_text").html(buzzo_intro_message);
+            $(".intro_message_prompt").fadeIn("slow", "linear");
+            $(".buzzo-close-wrapper").fadeIn("slow", "linear");
+            // var buzzo_inner_html = '<div class="actionbutton" data-query="is it right for me">Is it right for me?</div>';
+            var buzzo_inner_html = '<div class="actionbutton" data-query="Whats good about it">Whats good about it?</div>';
+            buzzo_inner_html += '<div class="actionbutton" data-query="Any similar options">Any similar options?</div>';
+            if(!fashion_category.includes(category)) {
+              $(".actionitems").html(buzzo_inner_html).fadeIn("slow", "linear");
+            }
+
+            try {
+              var frame = document.getElementById("chatdemo");
+              if (frame != undefined && frame != null && frame.src == "") {
+                // console.log("Play Sound is ",play_sound);
+                // console.log("User TYpe Value is ",getCookie(haptik_cookies.user_type.key));
+                if (play_sound) {
+                  buzzo_audio.play().catch(() => {});
+                  setCookie(haptik_cookies.userNotificationSoundPlayed, true, 60); // 60 min
+                }
+              }
+            } catch (e) {}
+
+            var action_counter = 0;
+            $(".actionbutton").each(function() {
+              addchatIVAClickListener(document.getElementsByClassName('actionbutton')[action_counter]);
+              action_counter += 1;
+            });
+          }
+          /*$(".intro_message_prompt").delay(time_to_hide_after * 1000).fadeOut();*/
+          intro_message_shown = true;
+          clearTimeout(setTimeoutConst);
+        }
+      }, delay_time * 1000, buzzo_audio);
+      if (typeof(preloadJsAndCssFiles) == "function")
+        preloadJsAndCssFiles();
+    }
+
+    if ($(window).width() > 768) {
+      buzzo_screen_type = "large";
+    } else {
+      buzzo_screen_type = "small";
+    }
+    var initial_body_value = "";
+    var initial_html_value = "";
+    var initial_body_height_value = "";
+    var initial_html_height_value = "";
+
+    function buzzo_disable_scroll() {
+      if(buzzo_client === 'jiomartmerchant') return;
+      initial_body_value = document.getElementsByTagName("body")[0].style.overflow;
+      initial_html_value = document.getElementsByTagName("html")[0].style.overflow;
+      initial_body_height_value = document.getElementsByTagName("body")[0].style.height;
+      initial_html_height_value = document.getElementsByTagName("html")[0].style.height;
+
+      document.getElementsByTagName("body")[0].style.overflow = "hidden";
+      document.getElementsByTagName("body")[0].style.height = "100%";
+      document.getElementsByTagName("html")[0].style.height = "100%";
+      document.getElementsByTagName("html")[0].style.overflow = "hidden";
+    }
+
+    function buzzo_enable_scroll() {
+      document.getElementsByTagName("body")[0].style.overflow = initial_body_value;
+      document.getElementsByTagName("body")[0].style.height = initial_body_height_value;
+      document.getElementsByTagName("html")[0].style.height = initial_html_height_value;
+      document.getElementsByTagName("html")[0].style.overflow = initial_html_value;
+    }
+
+    var buzzo_onload_once = true;
+    $(haptik_iframe_id).on('load', function(evt) {
+      if (buzzo_element_iframe.src != "") {
+        $(haptik_iframe_id).removeClass("buzzo-hide");
+        var state = {};
+        var newUrl = window.location.href + (buzzo_client === 'jiomartmerchant'?'':hash_buzzo_chat);
+        window.history.pushState(state, document.title, newUrl);
+        if (buzzo_onload_once) {
+          $('.intro_message_prompt').remove();
+          buzzo_onload_once = false;
+        }
+      }
+    });
+
+    window.addEventListener("message", function(event) {
+      if (event.origin.includes(buzzo_main_url)) {
+        // something from an unknown domain, let's ignore it
+        if (event != undefined) {
+          // Dispatch/Trigger/Fire the event
+          var data = event.data;
+          try {
+            data = JSON.parse(data);
+          } catch (err) {
+            //console.log("Got Error Parsing JSON");
+          }
+
+          if (data.event_name && data.event_name.includes("close_haptik_chat")) {
+            buzzo_assistant_functionality();
+            //buzzo_message_received = true;
+            if (buzzo_screen_type == "small") {
+              buzzo_enable_scroll();
+            }
+            if (voice_first_clients.includes(buzzo_client)) {
+              $(haptik_assistant_id).remove();
+              $(haptik_iframe_id).remove();
+              if(document.getElementById("buzzooverlay")) {
+                document.getElementById("buzzooverlay").remove();
+              }
+
+              if(buzzo_mode !== 'banner')
+                buildChatWidget();
+              // $("#buzzooverlay").remove();
+              //haptik_variables_set = false;
+              buzzo_iframeloaded = false;
+              buzzo_overlay_clicked_count = 0;
+            }
+
+          } else if (data.event_name && data.event_name.includes("haptik_event_debug")) {
+            if (debug.toLowerCase() == "true" && window.location.pathname.includes('commerce-demo')) {
+              $("#haptik_debug_response").text("");
+              try {
+                var tree = jsonTree.create(data.detail, document.getElementById('haptik_debug_response'));
+                tree.expand(function(node) {
+                  return node.childNodes[0];
+                });
+              } catch (e) {
+                document.getElementById('haptik_debug_response').innerHTML = data.detail.toString();
+              }
+            }
+          } else if (data.event_name && data.event_name.includes("@internal_change_iframe_view")) {
+            var addMaxHeight = data.addMaxHeight;
+            var addMinHeight = data.addMinHeight;
+            var iframeChatDemo = document.getElementById("chatdemo");
+            if (iframeChatDemo) {
+              if (addMaxHeight == true) {
+                iframeChatDemo.classList.add('add-max-height');
+              } else if (addMaxHeight == false) {
+                iframeChatDemo.classList.remove('add-max-height');
+              }
+              if (addMinHeight == true) {
+                iframeChatDemo.classList.add('minimized-height');
+              } else if (addMinHeight == false) {
+                iframeChatDemo.classList.remove('minimized-height');
+              }
+            }
+          } else if (data.event_name && data.event_name.includes("@internal_change_iframe_menu_view")) {
+            var addClassHeight = data.addClass;
+            var iframeChatDemo = document.getElementById("chatdemo");
+            if(iframeChatDemo) {
+              if(addClassHeight) {
+                iframeChatDemo.classList.add('add-max-height-menu');
+              } else {
+                iframeChatDemo.classList.remove('add-max-height-menu');
+              }
+            }
+          } else if (data.event_name && data.event_name.includes("@internal_click_parent_element")) {
+            var elementsAtPos = document.elementsFromPoint(data.position.x, data.position.y);
+            if(elementsAtPos.length > 1) {
+              if(typeof(elementsAtPos[1].click) === 'function')
+                elementsAtPos[1].click();
+            }
+          } else if(data.event_name && data.event_name.includes("@internal_change_minimised_view_height")) {
+            document.getElementById("chatdemo").style.height = data.height + "px";
+          } else {
+            var cart_event = new CustomEvent("haptik_event", {
+              detail: data
+            });
+            window.dispatchEvent(cart_event);
+          }
+        }
+        return;
+      }
+    }, false);
+
+    $(window).on('hashchange', function(e) {
+      if (window.location.href.includes("#") && window.location.href.includes(hash_buzzo_chat) != true) {
+        $(haptik_assistant_id).css({
+          "display": "block"
+        });
+        $(haptik_iframe_id).addClass("buzzo-hide");
+
+        //console.log("hide buzzo");
+      } else {
+        //Unhide Buzzoai
+        //console.log("unhide buzzo");
+        $(haptik_assistant_id).css({
+          "display": "block"
+        });
+        $(haptik_assistant_id).attr("data-clicked", "false");
+        $('#buzzoiconassistant').removeClass("buzzo-hide");
+        $(haptik_iframe_id).addClass("buzzo-hide");
+        if (voice_first_clients.includes(buzzo_client)) {
+          $('.buzzooverlayscreen').addClass("buzzo-hide");
+        }
+      }
+    });
+    window.dispatchEvent(new CustomEvent("initiateHaptikIVA", {
+      detail: haptik_data_passed_from_client
+    }));
+    window.commerce_iva_script_loaded = true;
+    debug = $("body").attr("data-debug") || "false";
+    if (debug.toLowerCase() == "true" && window.location.pathname.includes('commerce-demo')) {
+      $("body").append("<link href='/static/aspectwise/css/jsonTree.css' rel='stylesheet' />");
+      $("body").append("<script src='/static/aspectwise/js/jsonTree.js' type='text/javascript' />");
+      $("body").append('<p id="haptik_debug_response" style="width:calc(100vw - 450px);margin:0px;padding:5px;height:calc(100vh - 30px);overflow:auto;border: 10px solid #dadada;word-break:break-all;background-color:#fff;"></p>');
+      // window.addEventListener("haptik_event_debug", function(event) {
+
+      // });
+    }
+
+    window.preloadJsAndCssFiles = function() {
+      var css_scripts_to_load = ["/static/aspectwise/css/buzzoai.css?" + haptik_version, "/static/aspectwise/css/" + buzzo_client + ".css?" + haptik_version, "/static/aspectwise/css/lightbox.min.css", "/static/aspectwise/css/material-design-iconic-font.min.css"];
+      for (i = 0; i < css_scripts_to_load.length; i++) {
+        var url = buzzo_main_url + css_scripts_to_load[i];
+        var buzzo_css_link = $("<link>", {
+          rel: "prefetch",
+          as: "style",
+          href: url
+        });
+        buzzo_css_link.appendTo('head');
+      }
+
+      var js_scripts_to_load = ["/static/aspectwise/js/jquery2.1.js", "/static/aspectwise/js/haptik-commerce-chatbot.js?" + haptik_version, '/static/aspectwise/js/hammer.js', '/static/aspectwise/js/pahomqtt.js', "/static/aspectwise/js/lightbox.min.js",
+        "/static/aspectwise/js/mustache.min.js", "/static/aspectwise/js/jquery.mustache.js"];
+      for (i = 0; i < js_scripts_to_load.length; i++) {
+        var url = buzzo_main_url + js_scripts_to_load[i];
+
+        var buzzo_css_link = $("<link>", {
+          rel: "prefetch",
+          as: "script",
+          href: url
+        });
+        buzzo_css_link.appendTo('head');
+        //console.log("Getting Buzzo SCript", url);
+      }
+      var images_to_load = [""];
+    };
+  });
+};
+
+function initiateHaptikIVA(haptik_data) {
+  // haptik_data = haptik_data_passed_from_client)
+  if (!first_time_initiated) {
+    first_time_initiated = true;
+    haptik_data_passed_from_client = haptik_data;
+    window.addEventListener("initiateHaptikIVA", function(event) {
+      if (event != undefined && event.detail != null) {
+        if (event.detail.hasOwnProperty("mode") && event.detail.mode.toLowerCase() == "banner") {
+          if(open_haptik_chat_iva){
+            open_haptik_chat_iva(event.detail);
+          }
+        } else {
+          try {
+            window.GetHaptikClientSettings(event.detail);
+          } catch (err) {
+            //Sentry.captureException(err);
+          }
+        }
+      }
+    });
+  }
+  window.dispatchEvent(new CustomEvent("initiateHaptikIVA", {
+    detail: haptik_data
+  }));
+};
+
+function raiseHaptikEvent(event_data) {
+  //Dispatch an event
+  var frame = document.getElementById("chatdemo");
+  if (frame != undefined && frame != null) {
+    frame.contentWindow.postMessage({
+      call: 'raiseHaptikEvent',
+      value: JSON.stringify(event_data)
+    }, buzzo_main_url);
+  }
+};
+
+window.buzzo_mouse_position = {};
+
+function getClickPosition(p){
+  buzzo_mouse_position.x = p.pageX;
+  buzzo_mouse_position.y = p.pageY;
+}
+ 
+addEventListener('mousemove', getClickPosition, false);

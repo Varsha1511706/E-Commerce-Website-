@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin - Shoppers Stop</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+  <style>
+    :root {
+      --primary-color: #4361ee;
+      --secondary-color: #3f37c9;
+      --accent-color: #4cc9f0;
+      --dark-color: #1a1a2e;
+      --light-color: #f8f9fa;
+      --success-color: #4bb543;
+      --danger-color: #ff3333;
+      --warning-color: #ffcc00;
+      --glass-bg: rgba(255, 255, 255, 0.15);
+      --glass-border: rgba(255, 255, 255, 0.18);
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: var(--dark-color);
+      color: var(--light-color);
+      overflow-x: hidden;
+      min-height: 100vh;
+      position: relative;
+    }
+    
+    /* Live Beach Background */
+    .live-background {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -2;
+      overflow: hidden;
+    }
+    
+    .live-background video {
+      min-width: 100%;
+      min-height: 100%;
+      object-fit: cover;
+      opacity: 0.7;
+    }
+    
+    .bg-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, rgba(26, 26, 46, 0.9) 0%, rgba(63, 55, 201, 0.7) 100%);
+      z-index: -1;
+    }
+    
+    /* Floating Particles */
+    .particles {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      pointer-events: none;
+    }
+    
+    .particle {
+      position: absolute;
+      background-color: rgba(255, 255, 255, 0.5);
+      border-radius: 50%;
+      animation: float 15s infinite linear;
+    }
+    
+    @keyframes float {
+      0% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(-1000px) rotate(720deg);
+        opacity: 0;
+      }
+    }
+    
+    /* Navigation */
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.5rem 5%;
+      background: rgba(26, 26, 46, 0.5);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      position: fixed;
+      width: 100%;
+      top: 0;
+      z-index: 1000;
+      border-bottom: 1px solid var(--glass-border);
+      transition: all 0.3s ease;
+    }
+    
+    .navbar.scrolled {
+      padding: 1rem 5%;
+      background: rgba(26, 26, 46, 0.8);
+    }
+    
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--light-color);
+    }
+    
+    .logo i {
+      color: var(--accent-color);
+    }
+    
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+    
+    .nav-link {
+      color: var(--light-color);
+      text-decoration: none;
+      font-weight: 500;
+      position: relative;
+      transition: all 0.3s ease;
+      padding: 0.5rem 0;
+    }
+    
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background-color: var(--accent-color);
+      transition: width 0.3s ease;
+    }
+    
+    .nav-link:hover::after {
+      width: 100%;
+    }
+    
+    .nav-link:hover {
+      color: var(--accent-color);
+    }
+    
+    .mobile-menu-btn {
+      display: none;
+      background: none;
+      border: none;
+      color: var(--light-color);
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+    
+    /* Main Content */
+    .admin-content {
+      padding: 8rem 5% 4rem;
+      min-height: 100vh;
+    }
+    
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    
+    .section-title {
+      font-size: 3rem;
+      font-weight: 800;
+      margin-bottom: 1rem;
+      background: linear-gradient(90deg, var(--accent-color), var(--light-color));
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeInUp 0.8s 0.2s forwards;
+    }
+    
+    .section-subtitle {
+      font-size: 1.2rem;
+      color: rgba(255, 255, 255, 0.7);
+      margin-bottom: 3rem;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeInUp 0.8s 0.4s forwards;
+    }
+    
+    @keyframes fadeInUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    /* Glassmorphism Cards */
+    .glassmorphism-card {
+      background: var(--glass-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-radius: 20px;
+      border: 1px solid var(--glass-border);
+      padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.2);
+      transition: all 0.3s ease;
+    }
+    
+    .glassmorphism-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.3);
+    }
+    
+    .glassmorphism-card h3 {
+      font-size: 1.8rem;
+      margin-bottom: 1.5rem;
+      color: var(--light-color);
+      font-weight: 600;
+      position: relative;
+      display: inline-block;
+    }
+    
+    .glassmorphism-card h3::after {
+      content: '';
+      position: absolute;
+      bottom: -8px;
+      left: 0;
+      width: 50px;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent-color), transparent);
+      border-radius: 3px;
+    }
+    
+    /* Form Styles */
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      color: rgba(255, 255, 255, 0.9);
+    }
+    
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      width: 100%;
+      padding: 0.8rem 1rem;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--light-color);
+      font-family: 'Poppins', sans-serif;
+      transition: all 0.3s ease;
+    }
+    
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: var(--accent-color);
+      box-shadow: 0 0 0 3px rgba(76, 201, 240, 0.3);
+    }
+    
+    .form-group textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+    
+    .form-group input[type="checkbox"] {
+      width: auto;
+      margin-right: 0.5rem;
+    }
+    
+    /* Button Styles */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.8rem 1.8rem;
+      border-radius: 10px;
+      border: none;
+      background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(67, 97, 238, 0.3);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-size: 0.9rem;
+    }
+    
+    .btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(67, 97, 238, 0.4);
+    }
+    
+    .btn:active {
+      transform: translateY(1px);
+    }
+    
+    .btn i {
+      font-size: 1rem;
+    }
+    
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.8rem 1.8rem;
+      border-radius: 10px;
+      border: 1px solid var(--accent-color);
+      background: transparent;
+      color: var(--accent-color);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-left: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-size: 0.9rem;
+    }
+    
+    .btn-secondary:hover {
+      background: rgba(76, 201, 240, 0.1);
+    }
+    
+    /* Product Grid */
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+    
+    .product-card {
+      background: var(--glass-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-radius: 15px;
+      border: 1px solid var(--glass-border);
+      overflow: hidden;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+    
+    .product-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    }
+    
+    .product-image {
+      height: 200px;
+      overflow: hidden;
+    }
+    
+    .product-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s ease;
+    }
+    
+    .product-card:hover .product-image img {
+      transform: scale(1.05);
+    }
+    
+    .product-info {
+      padding: 1.5rem;
+    }
+    
+    .product-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: var(--light-color);
+    }
+    
+    .product-category {
+      display: inline-block;
+      padding: 0.2rem 0.8rem;
+      background: rgba(76, 201, 240, 0.2);
+      color: var(--accent-color);
+      border-radius: 50px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+    
+    .product-description {
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
+      display: -webkit-box;
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    
+    .product-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 1rem;
+    }
+    
+    .product-price {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--light-color);
+    }
+    
+    .product-rating {
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      color: var(--warning-color);
+    }
+    
+    .product-actions {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+    
+    .action-btn {
+      flex: 1;
+      padding: 0.5rem;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.3rem;
+      font-weight: 500;
+      font-size: 0.8rem;
+    }
+    
+    .edit-btn {
+      background: rgba(75, 181, 67, 0.2);
+      color: var(--success-color);
+    }
+    
+    .edit-btn:hover {
+      background: rgba(75, 181, 67, 0.3);
+    }
+    
+    .delete-btn {
+      background: rgba(255, 51, 51, 0.2);
+      color: var(--danger-color);
+    }
+    
+    .delete-btn:hover {
+      background: rgba(255, 51, 51, 0.3);
+    }
+    
+    .stock-badge {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      padding: 0.3rem 0.8rem;
+      border-radius: 50px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      z-index: 1;
+    }
+    
+    .in-stock {
+      background: rgba(75, 181, 67, 0.2);
+      color: var(--success-color);
+    }
+    
+    .out-of-stock {
+      background: rgba(255, 51, 51, 0.2);
+      color: var(--danger-color);
+    }
+    
+    /* Loading Animation */
+    #loading-products-message {
+      text-align: center;
+      padding: 2rem;
+      color: rgba(255, 255, 255, 0.7);
+    }
+    
+    .spinner {
+      width: 40px;
+      height: 40px;
+      margin: 0 auto;
+      border: 4px solid rgba(255, 255, 255, 0.1);
+      border-left-color: var(--accent-color);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+    
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 2rem;
+      background: rgba(26, 26, 46, 0.7);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-top: 1px solid var(--glass-border);
+    }
+    
+    footer .logo {
+      justify-content: center;
+      margin-bottom: 1rem;
+    }
+    
+    footer p {
+      color: rgba(255, 255, 255, 0.7);
+      margin-bottom: 0.5rem;
+    }
+    
+    .copyright {
+      font-size: 0.8rem;
+    }
+    
+    /* Floating Elements Animation */
+    .floating-element {
+      position: absolute;
+      opacity: 0;
+      animation: floatElement 15s infinite linear;
+      z-index: -1;
+    }
+    
+    @keyframes floatElement {
+      0% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 0;
+      }
+      10% {
+        opacity: 0.3;
+      }
+      90% {
+        opacity: 0.3;
+      }
+      100% {
+        transform: translateY(-100vh) rotate(360deg);
+        opacity: 0;
+      }
+    }
+    
+    /* Responsive Design */
+    @media (max-width: 992px) {
+      .products-grid {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .navbar {
+        padding: 1rem 5%;
+      }
+      
+      .nav-links {
+        position: fixed;
+        top: 70px;
+        left: -100%;
+        width: 100%;
+        height: calc(100vh - 70px);
+        background: rgba(26, 26, 46, 0.95);
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 2rem;
+        transition: all 0.5s ease;
+        z-index: 999;
+      }
+      
+      .nav-links.active {
+        left: 0;
+      }
+      
+      .mobile-menu-btn {
+        display: block;
+      }
+      
+      .admin-content {
+        padding: 6rem 5% 2rem;
+      }
+      
+      .section-title {
+        font-size: 2.2rem;
+      }
+    }
+    
+    @media (max-width: 576px) {
+      .products-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .btn, .btn-secondary {
+        width: 100%;
+        margin-bottom: 0.5rem;
+        margin-left: 0;
+      }
+    }
+  </style>
+</head>
+<body class="admin-page-body">
+  <!-- Live Beach Background Video -->
+  <div class="live-background">
+    <video autoplay muted loop id="beachVideo">
+      <source src="https://assets.mixkit.co/videos/preview/mixkit-waves-coming-to-the-beach-5016-large.mp4" type="video/mp4">
+    </video>
+  </div>
+  
+  <!-- Background Overlay -->
+  <div class="bg-overlay"></div>
+  
+  <!-- Floating Particles -->
+  <div class="particles" id="particles"></div>
+  
+  <!-- Floating Decorative Elements -->
+  <div class="floating-elements">
+    <div class="floating-element" style="top: 20%; left: 5%; width: 30px; height: 30px; background: rgba(76, 201, 240, 0.3); border-radius: 50%; animation-delay: 0s;"></div>
+    <div class="floating-element" style="top: 30%; left: 80%; width: 40px; height: 40px; background: rgba(67, 97, 238, 0.3); border-radius: 50%; animation-delay: 3s;"></div>
+    <div class="floating-element" style="top: 70%; left: 10%; width: 50px; height: 50px; background: rgba(63, 55, 201, 0.3); border-radius: 50%; animation-delay: 6s;"></div>
+    <div class="floating-element" style="top: 60%; left: 90%; width: 25px; height: 25px; background: rgba(76, 201, 240, 0.3); border-radius: 50%; animation-delay: 9s;"></div>
+  </div>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <div class="logo">
+      <i class="fas fa-cog"></i>
+      <span>Admin Dashboard</span>
+    </div>
+    <ul class="nav-links">
+      <li><a href="index.html" class="nav-link"><i class="fas fa-store"></i> Back to Store</a></li>
+      <li><a href="#" class="nav-link"><i class="fas fa-chart-line"></i> Analytics</a></li>
+      <li><a href="#" class="nav-link"><i class="fas fa-users"></i> Users</a></li>
+      <li><a href="#" class="nav-link"><i class="fas fa-cog"></i> Settings</a></li>
+    </ul>
+    <button class="mobile-menu-btn">
+      <i class="fas fa-bars"></i>
+    </button>
+  </nav>
+
+  <section class="admin-content section">
+    <div class="container">
+      <h2 class="section-title animate__animated animate__fadeInDown">Product Management</h2>
+      <p class="section-subtitle animate__animated animate__fadeInDown animate__delay-1s">Effortlessly manage your product catalog with real-time updates</p>
+
+      <div class="admin-form-container glassmorphism-card animate__animated animate__fadeInUp animate__delay-1s">
+        <h3><i class="fas fa-edit"></i> Product Editor</h3>
+        <form id="product-form">
+          <input type="hidden" id="product-id">
+          <div class="form-group">
+            <label for="name"><i class="fas fa-tag"></i> Product Name</label>
+            <input type="text" id="name" placeholder="Enter product name" required>
+          </div>
+          <div class="form-group">
+            <label for="description"><i class="fas fa-align-left"></i> Description</label>
+            <textarea id="description" placeholder="Enter detailed product description" required></textarea>
+          </div>
+          <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+            <div class="form-group">
+              <label for="price"><i class="fas fa-dollar-sign"></i> Price</label>
+              <input type="number" id="price" step="0.01" placeholder="e.g., 99.99" required>
+            </div>
+            <div class="form-group">
+              <label for="rating"><i class="fas fa-star"></i> Rating (1-5)</label>
+              <input type="number" id="rating" step="0.1" min="1" max="5" value="4.5" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="imageUrl"><i class="fas fa-image"></i> Image URL</label>
+            <input type="url" id="imageUrl" placeholder="e.g., https://example.com/image.jpg" required>
+          </div>
+          <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+            <div class="form-group">
+              <label for="category"><i class="fas fa-list"></i> Category</label>
+              <select id="category" required>
+                <option value="">Select Category</option>
+                <option value="electronics">Electronics</option>
+                <option value="fashion">Fashion</option>
+                <option value="home">Home</option>
+                <option value="beauty">Beauty</option>
+                <option value="sports">Sports</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="stock"><i class="fas fa-box-open"></i> Stock Status</label>
+              <div style="padding: 0.8rem 0;">
+                <input type="checkbox" id="stock" checked>
+                <label for="stock" style="display: inline;">In Stock</label>
+              </div>
+            </div>
+          </div>
+          <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+            <button type="submit" class="btn" id="form-submit-btn"><i class="fas fa-plus-circle"></i> Add Product</button>
+            <button type="button" class="btn-secondary" id="form-cancel-btn" style="display: none;"><i class="fas fa-times"></i> Cancel</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="product-list-container glassmorphism-card animate__animated animate__fadeInUp animate__delay-1s">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+          <h3><i class="fas fa-list-ul"></i> Product Inventory</h3>
+          <div style="position: relative;">
+            <input type="text" id="product-search" placeholder="Search products..." style="padding: 0.6rem 1rem; border-radius: 30px; border: none; background: rgba(255, 255, 255, 0.1); color: white; width: 250px; padding-left: 2.5rem;">
+            <i class="fas fa-search" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: rgba(255, 255, 255, 0.7);"></i>
+          </div>
+        </div>
+        
+        <div id="loading-products-message">
+          <div class="spinner"></div>
+          <p>Loading product inventory...</p>
+        </div>
+        
+        <div id="product-list-grid" class="products-grid">
+          <!-- Sample product (will be replaced by dynamic content) -->
+          <div class="product-card animate__animated animate__fadeIn">
+            <div class="product-image">
+              <img src="https://via.placeholder.com/400x300" alt="Sample Product">
+              <span class="stock-badge in-stock">In Stock</span>
+            </div>
+            <div class="product-info">
+              <span class="product-category">Electronics</span>
+              <h4 class="product-title">Sample Product</h4>
+              <p class="product-description">This is a sample product description that will be replaced with real data from your database.</p>
+              <div class="product-meta">
+                <span class="product-price">$99.99</span>
+                <span class="product-rating">
+                  <i class="fas fa-star"></i> 4.5
+                </span>
+              </div>
+              <div class="product-actions">
+                <button class="action-btn edit-btn"><i class="fas fa-edit"></i> Edit</button>
+                <button class="action-btn delete-btn"><i class="fas fa-trash"></i> Delete</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="animate__animated animate__fadeInUp animate__delay-2s">
+    <div class="logo">
+      <i class="fas fa-shopping-bag"></i>
+      <span>Shoppers Stop</span>
+    </div>
+    <p>Premium Product Management Dashboard</p>
+    <p class="copyright">© 2023 Shoppers Stop. All rights reserved.</p>
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/ScrollTrigger.min.js"></script>
+  <script>
+    // Mobile Menu Toggle
+    document.querySelector('.mobile-menu-btn').addEventListener('click', function() {
+      document.querySelector('.nav-links').classList.toggle('active');
+    });
+    
+    // Navbar scroll effect
+    window.addEventListener('scroll', function() {
+      if (window.scrollY > 50) {
+        document.querySelector('.navbar').classList.add('scrolled');
+      } else {
+        document.querySelector('.navbar').classList.remove('scrolled');
+      }
+    });
+    
+    // Create floating particles
+    function createParticles() {
+      const particlesContainer = document.getElementById('particles');
+      const particleCount = 20;
+      
+      for (let i = 0; i < particleCount; i++) {
+        const particle = document.createElement('div');
+        particle.classList.add('particle');
+        
+        // Random properties
+        const size = Math.random() * 5 + 2;
+        const posX = Math.random() * 100;
+        const delay = Math.random() * 15;
+        const duration = Math.random() * 10 + 10;
+        
+        particle.style.width = `${size}px`;
+        particle.style.height = `${size}px`;
+        particle.style.left = `${posX}%`;
+        particle.style.animationDelay = `${delay}s`;
+        particle.style.animationDuration = `${duration}s`;
+        
+        particlesContainer.appendChild(particle);
+      }
+    }
+    
+    // Initialize animations
+    document.addEventListener('DOMContentLoaded', function() {
+      createParticles();
+      
+      // GSAP animations
+      gsap.from('.navbar', {
+        duration: 1,
+        y: -50,
+        opacity: 0,
+        ease: 'power3.out'
+      });
+      
+      // ScrollTrigger animations
+      gsap.utils.toArray('.glassmorphism-card').forEach((card, i) => {
+        ScrollTrigger.create({
+          trigger: card,
+          start: "top 80%",
+          onEnter: () => {
+            gsap.to(card, {
+              opacity: 1,
+              y: 0,
+              duration: 0.8,
+              ease: "back.out"
+            });
+          }
+        });
+      });
+      
+      // Simulate loading products
+      setTimeout(() => {
+        document.getElementById('loading-products-message').style.display = 'none';
+        
+        // In a real app, you would fetch products from an API here
+        // For demo purposes, we'll just show the sample product
+        document.getElementById('product-list-grid').style.opacity = '1';
+      }, 1500);
+    });
+    
+    // Form handling (simplified for demo)
+    document.getElementById('product-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      // In a real app, you would handle form submission to your backend here
+      alert('Product saved successfully!');
+      this.reset();
+    });
+  </script>
+</body>
+</html>

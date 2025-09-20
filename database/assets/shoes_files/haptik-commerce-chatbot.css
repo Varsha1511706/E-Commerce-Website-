@@ -1,0 +1,775 @@
+@font-face {
+  font-family: "BuzzoMontserrat";
+  src: url('../fonts/Montserrat-Regular.ttf') format("truetype");
+}
+
+@font-face {
+  font-family: "BuzzoMontserratBold";
+  src: url('../fonts/Montserrat-ExtraBold.ttf') format("truetype");
+}
+
+.buzzo-original-design .showassistant {
+  border-radius: 100%;
+  position: relative;
+  background-color: #000;
+  position: fixed;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  color: #fff;
+}
+
+.buzzo-original-design.haptik-gamestop .showassistant,
+.buzzo-original-design.haptik-tatacliq .showassistant {
+  background-color: transparent;
+}
+
+.buzzo-original-design.haptik-gamestop .showassistant>img,
+.buzzo-original-design.haptik-tatacliq .showassistant>img {
+  width: 89px;
+  top: -15px;
+  left: 24px;
+}
+
+.buzzo-original-design.haptik-gamestop .intro_message_prompt,
+.buzzo-original-design.haptik-tatacliq .intro_message_prompt {
+  bottom: 125px !important;
+  display: none !important;
+}
+
+.buzzo-original-design.haptik-gamestop .showassistant>img {
+  filter: grayscale(1) drop-shadow(2px 4px 6px black);
+  left: 15px;
+}
+
+.buzzo-original-design.haptik-tatacliq+.buzzochatdemo {
+  -webkit-box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.6);
+  -moz-box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.6);
+  box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.6);
+}
+
+.buzzochattabletviewdemo {
+  width: 480px;
+  height: 100%;
+  position: fixed;
+  z-index: 1000000000;
+  right: 20.5%;
+  bottom: 0px;
+  box-shadow: 1px 4px 15px rgba(1, 1, 1, 0.35);
+  /*border-radius: 5px;*/
+  overflow: hidden;
+  border: 0 !important;
+  border: 2px solid #B5B5B5;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px
+}
+
+.buzzo-hide {
+  display: none !important;
+}
+
+.buzzo-original-design .intro_message_prompt {
+  display: flex;
+  align-items: flex-start;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  position: fixed;
+  bottom: 118px !important;
+  /*right: 60px;*/
+  max-width: 200px;
+  width: auto;
+  padding: 5px;
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 1px 4px 15px rgba(1, 1, 1, .35);
+  z-index: 999980 !important;
+  cursor: pointer;
+  -moz-transition: .5s ease-in-out;
+  -webkit-transition: .5s ease-in-out;
+  -o-transition: .5s ease-in-out;
+  transition: .5s ease-in-out;
+  z-index: 1000 !important;
+}
+
+.buzzo-original-design .buzzo_intro_text {
+  font-size: 14px !important;
+  color: #777;
+  line-height: 1.5;
+  margin: 5px;
+  font-weight: 400;
+  text-align: left;
+}
+
+.buzzo-original-design .intro_message_prompt::after {
+  content: "";
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  background: url("https://buzzodjangostorage.blob.core.windows.net/static/aspectwise/images/buzzo-chat-arrow-2.png");
+  bottom: -24px;
+  display: inline-block;
+  right: 50%;
+  transform: translateX(50%) rotate(90deg);
+  background-repeat: no-repeat;
+}
+
+.buzzo-original-design .intro_message_prompt img {
+  height: 10px;
+  width: 10px;
+  margin-top: 2px;
+  margin-right: 2px;
+}
+
+@media screen and (max-width: 768px) {
+
+  /*
+	.showassistant{
+			right: calc(50% - 30px) !important;
+		}*/
+  /*
+	.intro_message_prompt {
+			right: 23.5% !important;
+		}*/
+  .buzzochatdemo {
+    width: 100% !important;
+    margin: 0px;
+    height: 100%;
+    top: 0px;
+    bottom: 0px;
+    right: 0px;
+    border-radius: 0px;
+  }
+}
+
+@media screen and (max-width: 399px) {
+  .buzzochatdemo {
+    width: 100% !important;
+  }
+}
+
+.buzzo-original-design .showassistant .border {
+  /* content: ''; */
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: transparent;
+  border-radius: 50%;
+  border-top: 4px solid black;
+  border-left: 4px solid #b1dcfb;
+  border-right: 4px solid #26a69a;
+  border-bottom: 4px solid #2c295c;
+  transform: rotate(45deg);
+  -webkit-animation-name: buzzoRotate;
+  -webkit-animation-duration: 4s;
+  -webkit-animation-iteration-count: infinite;
+  -webkit-animation-timing-function: linear;
+  -moz-animation-name: buzzoRotate;
+  -moz-animation-duration: 4s;
+  -moz-animation-iteration-count: infinite;
+  -moz-animation-timing-function: linear;
+  -ms-animation-name: buzzoRotate;
+  -ms-animation-duration: 4s;
+  -ms-animation-iteration-count: infinite;
+  -ms-animation-timing-function: linear;
+}
+
+.buzzo-original-design .right-bottom {
+  bottom: 30px;
+  right: 60px;
+}
+
+.buzzo-original-design .center-bottom {
+  bottom: 30px;
+  right: 50%;
+}
+
+.buzzo-original-design .left-bottom {
+  bottom: 30px;
+  left: 60px;
+}
+
+.buzzo-original-design.haptik-jiomartmerchant .center-bottom .intro_message_prompt,
+.buzzo-original-design.haptik-jiomartmerchantfull .center-bottom .intro_message_prompt,
+.buzzo-original-design.haptik-jiomart .center-bottom .intro_message_prompt,
+.buzzo-original-design.haptik-jiobeauty .center-bottom .intro_message_prompt {
+  right: 50%;
+  transform: translateX(50%);
+}
+
+.buzzo-original-design.haptik-jiomartmerchant .center-bottom,
+.buzzo-original-design.haptik-jiomartmerchantfull .center-bottom,
+.buzzo-original-design.haptik-jiomart .center-bottom,
+.buzzo-original-design.haptik-jiobeauty .center-bottom {
+  right: 50%;
+  transform: translateX(50%);
+}
+
+.buzzo-original-design.haptik-jiomartmerchant .showassistant,
+.buzzo-original-design.haptik-jiomartmerchantfull .showassistant {
+  background-color: #0e4194;
+}
+
+.buzzo-original-design.haptik-jiomart .showassistant{
+  background-color: #008ecc;
+}
+
+.buzzo-original-design.haptik-jiobeauty .showassistant {
+  background-color: #E36E59;
+}
+
+.buzzo-original-design .showassistant img {
+  color: white;
+  position: absolute;
+  top: 13px;
+  left: 17.5%;
+  width: 37px;
+  height: auto;
+}
+
+.buzzo-original-design.haptik-jiomartmerchantfull .showassistant img,
+.buzzo-original-design.haptik-jiomartmerchant .showassistant img,
+.buzzo-original-design.haptik-jiomart .showassistant img,
+.buzzo-original-design.haptik-jiobeauty .showassistant img {
+  top: unset;
+  left: unset;
+  width: 24px;
+}
+
+.buzzo-original-design .center-bottom.intro_message_prompt::after {
+  right: 50%;
+  transform: translateX(50%) rotate(90deg);
+}
+
+.buzzo-original-design .right-bottom.intro_message_prompt::after {
+  right: 16px;
+  transform: rotate(90deg);
+}
+
+.buzzo-original-design .haptik-gamestop .showassistant {
+  background-color: transparent;
+}
+
+.buzzo-original-design.haptik-gamestop .showassistant>img,
+.buzzo-original-design.haptik-tatacliq .showassistant>img {
+  width: 89px;
+}
+
+.buzzo-original-design.haptik-gamestop .showassistant>img {
+  filter: grayscale(1) drop-shadow(2px 4px 6px black);
+}
+
+.buzzooverlayscreen {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  z-index: 999999999;
+  background: #00000080;
+  /* rgba(83, 79, 79, 0.23)*/
+  cursor: pointer;
+  top: 0px;
+  right: 0;
+  bottom: 0px;
+}
+
+@keyframes blink {
+  50% {
+    color: transparent
+  }
+}
+
+.loader__dot {
+  animation: 1.5s blink infinite;
+  font-size: 30px !important;
+}
+
+.loader__dot:nth-child(2) {
+  animation-delay: 250ms;
+  font-size: 30px !important;
+}
+
+.loader__dot:nth-child(3) {
+  animation-delay: 500ms;
+  font-size: 30px !important;
+}
+
+.load {
+  padding-bottom: 16px;
+  font-size: 13px;
+  display: flex;
+  justify-content: center;
+}
+
+.loadingassistant {
+  border-radius: 100%;
+  position: relative;
+  /*background-color: #38679c;*/
+  background-color: #ffcb00bd;
+  color: white;
+  font-weight: 700;
+  font-size: 14px;
+  border: 2px solid white;
+  width: 65.5px;
+  height: 65.5px;
+  background-size: 85px;
+  background-repeat: no-repeat;
+  position: fixed;
+  bottom: 30px;
+  right: 25px;
+  width: 60px;
+  height: 60px;
+  /*border-radius: 50%;*/
+  display: block;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  color: #fff;
+}
+
+/*
+.closeassistant{
+	border-radius: 100%;
+	position: relative;
+	background-color: #38679c;
+	color: white;
+	font-weight: 700;
+	font-size: 14px;
+	border: 2px solid white;
+	width: 65.5px;
+	height: 65.5px;
+	z-index: 99999999;
+	background-size: 85px;
+	background-repeat: no-repeat;
+	position: fixed;
+	bottom: 30px;
+	right: 25px;
+	width: 52px;
+	height: 52px;
+	border-radius: 50%;
+	display: block;
+	justify-content: center;
+	align-items: center;
+	cursor: pointer;
+	color: #fff;
+}
+
+@media screen and (max-width: 799px) {
+	.closeassistant{display: none !important;}
+}
+*/
+.buzzochatdemo {
+  width: 400px;
+  height: 100%;
+  position: fixed;
+  z-index: 1000000000;
+  right: 10px;
+  bottom: 0px;
+  /*box-shadow: 1px 4px 15px rgba(1,1,1,0.35);*/
+  /*border-radius: 5px;*/
+  overflow: hidden;
+  border: 0 !important;
+  border-radius: 0px 20px 5px;
+  -moz-transition: all 0.5s linear;
+  -webkit-transition: all 0.5s linear;
+  -o-transition: all 0.5s linear;
+  transition: all 0.5s linear;
+}
+
+.buzzochatdemo[data-client='jiomartmerchant'] {
+  box-shadow: 0 2px 10px 4px rgb(0 0 0 / 50%);
+  -moz-box-shadow: 0 2px 10px 4px rgb(0 0 0 / 50%);
+  -webkit-box-shadow: 0 2px 10px 4px rgb(0 0 0 / 50%);
+}
+
+.buzzo-prompt-design.haptik-tatacliq+.buzzochatdemo {
+  -webkit-box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.6);
+  -moz-box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.6);
+  box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.6);
+}
+
+.hovering-height {
+  height: 85%;
+}
+
+@media(min-width: 768px) {
+  .hovering-height:hover {
+    height: 95%;
+  }
+}
+
+.buzzo-prompt-design .intro_message_prompt {
+  display: flex;
+  align-items: flex-start;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  position: relative;
+  /*bottom: 118px !important;*/
+  /*right: 60px;*/
+  max-width: 200px;
+  width: auto;
+  padding: 5px;
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 1px 4px 15px rgba(1, 1, 1, .35);
+  z-index: 999980 !important;
+  cursor: pointer;
+  -moz-transition: .5s ease-in-out;
+  -webkit-transition: .5s ease-in-out;
+  -o-transition: .5s ease-in-out;
+  transition: .5s ease-in-out;
+  z-index: 1000 !important;
+  padding: 13px;
+  max-width: 162px;
+}
+
+.buzzo-prompt-design .buzzo_intro_text {
+  /*font-size: 14px !important;*/
+  color: #777;
+  line-height: 1.5;
+  margin: 5px;
+  font-weight: 400;
+  text-align: left;
+  /*font-size: 14px !important;*/
+  color: #777;
+  line-height: 1.5;
+  margin: 5px;
+  font-weight: 400;
+  text-align: left;
+  font-size: 12px;
+  font-weight: normal;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1.6;
+  letter-spacing: normal;
+  text-align: right;
+  color: #212121;
+  font-family: BuzzoMontserrat;
+  margin: 0px;
+}
+
+.buzzo-prompt-design .buzzo-close-wrapper {
+  position: relative;
+  background-repeat: no-repeat;
+  background-color: #ffffff;
+  -webkit-backdrop-filter: blur(5.5px);
+  backdrop-filter: blur(5.5px);
+  box-shadow: 0 3px 6px 0 rgba(0, 0, 0, 0.15);
+  border: solid 0.5px #e5e5e5;
+  background-color: #ffffff;
+  height: 20px;
+  width: 20px;
+  cursor: pointer;
+  box-shadow: 0 3px 6px 0 rgb(0 0 0 / 0.35);
+}
+
+.buzzo-prompt-design .buzzo-close-wrapper img {
+  height: 8px;
+  width: 8px;
+  margin: auto;
+}
+
+.buzzo-prompt-design .intro_message_prompt img {
+  height: 10px;
+  width: 10px;
+  margin-top: 2px;
+  margin-right: 2px;
+}
+
+@media screen and (max-width: 768px) {
+
+  /*
+	.showassistant{
+			right: calc(50% - 30px) !important;
+		}*/
+  /*
+	.intro_message_prompt {
+			right: 23.5% !important;
+		}*/
+  .buzzochatdemo {
+    width: 100% !important;
+    margin: 0px;
+    height: 100%;
+    top: 0px;
+    bottom: 0px;
+    right: 0px;
+    border-radius: 0px;
+  }
+}
+
+@media screen and (max-width: 399px) {
+  .buzzochatdemo {
+    width: 100% !important;
+  }
+}
+
+.buzzo-prompt-design .showassistant .border {
+  /* content: ''; */
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: transparent;
+  border-radius: 50%;
+  border-top: 4px solid black;
+  border-left: 4px solid #b1dcfb;
+  border-right: 4px solid #26a69a;
+  border-bottom: 4px solid #2c295c;
+  transform: rotate(45deg);
+  -webkit-animation-name: buzzoRotate;
+  -webkit-animation-duration: 4s;
+  -webkit-animation-iteration-count: infinite;
+  -webkit-animation-timing-function: linear;
+  -moz-animation-name: buzzoRotate;
+  -moz-animation-duration: 4s;
+  -moz-animation-iteration-count: infinite;
+  -moz-animation-timing-function: linear;
+  -ms-animation-name: buzzoRotate;
+  -ms-animation-duration: 4s;
+  -ms-animation-iteration-count: infinite;
+  -ms-animation-timing-function: linear;
+}
+
+@-webkit-keyframes buzzoRotate {
+  from {
+    -webkit-transform: rotate(0deg);
+  }
+
+  to {
+    -webkit-transform: rotate(360deg);
+  }
+}
+
+@-moz-keyframes buzzoRotate {
+  from {
+    -moz-transform: rotate(0deg);
+  }
+
+  to {
+    -moz-transform: rotate(360deg);
+  }
+}
+
+@-ms-keyframes buzzoRotate {
+  from {
+    -ms-transform: rotate(0deg);
+  }
+
+  to {
+    -ms-transform: rotate(360deg);
+  }
+}
+
+@keyframes buzzo-shadow-pulse {
+  0% {
+    box-shadow: 0 0 0 0px rgba(0, 0, 0, 0.2);
+  }
+
+  100% {
+    box-shadow: 0 0 0 35px rgba(0, 0, 0, 0);
+  }
+}
+
+.add-border {
+  border: 1px solid #4e4c4c87 !important;
+}
+
+.buzzo-prompt-design {
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  bottom: 0px;
+  right: 0px;
+  width: auto;
+  height: auto;
+  /* width: 266px; */
+  justify-content: space-evenly;
+  margin: 30px;
+  align-items: flex-end;
+  pointer-events: none;
+}
+
+.buzzo-prompt-design.haptikivacommerceicon>div {
+  display: flex;
+  /* flex: 1; */
+  /* flex-direction: column; */
+  margin-top: 12px;
+  pointer-events: all;
+}
+
+/*
+.tatacliq.buzzooverlayscreen {
+	display: none !important;
+}
+*/
+.buzzo-prompt-design.right-bottom {
+  /*bottom: 30px;
+	right: 60px;*/
+}
+
+.buzzo-prompt-design .center-bottom {
+  /*bottom: 30px;
+	right: 50%;*/
+}
+
+.buzzo-prompt-design .left-bottom {
+  /*bottom: 30px;
+	left: 60px;*/
+}
+
+.minimized-height {
+  height: -webkit-fill-available;
+  top: unset;
+  /*-webkit-box-shadow: 0 2px 10px 4px rgb(0 0 0 / 50%);*/
+  border-radius: 0px;
+  max-height: 100%;
+}
+
+@media screen and (min-width: 480px) {
+  .minimized-height[data-client='jiomartmerchant'] {
+    top: 0px;
+    right: 50px;
+    max-height: unset;
+    height: 125px;
+    border-radius: 10px;
+    background: #ffffff;
+    /* max-height: 300px; */
+  }
+  .add-max-height[data-client='jiomartmerchant'] {
+    max-height: 285px;
+    height: unset;
+  }
+
+  .add-max-height-menu[data-client='jiomartmerchant'] {
+    height: 285px !important;
+  }
+}
+
+.add-max-height {
+  top: auto;
+  max-height: 255px;
+}
+
+@media screen and (max-width: 480px) {
+  .add-max-height {
+    max-height: unset;
+  }
+}
+
+.buzzo-prompt-design.haptik-jiomartmerchant .showassistant, .buzzo-prompt-design.haptik-jiomartmerchantfull .showassistant,
+.buzzo-prompt-design.haptik-jiomart .showassistant,
+.buzzo-prompt-design.haptik-jiobeauty .showassistant {
+  background-color: #008ecc;
+  width: 60px;
+  height: 60px;
+  justify-content: center;
+}
+
+.buzzo-prompt-design.haptik-jiobeauty .showassistant {
+  background-color: #E36E59;
+}
+
+.buzzo-prompt-design .showassistant img {
+  color: white;
+  position: relative;
+  /*top: 13px;
+    left: 17.5%;
+    width: 37px;*/
+  height: auto;
+}
+
+.buzzo-prompt-design.haptik-jiomartmerchant .showassistant img, .buzzo-prompt-design.haptik-jiomartmerchantfull .showassistant img,
+.buzzo-prompt-design.haptik-jiomart .showassistant img,
+.buzzo-prompt-design.haptik-jiobeauty .showassistant img {
+  top: unset;
+  left: unset;
+  width: 24px;
+}
+
+.buzzo-prompt-design .center-bottom.intro_message_prompt:after {
+  right: 20%;
+  transform: translateX(50%) rotate(90deg);
+}
+
+.buzzo-prompt-design .right-bottom.intro_message_prompt::after {
+  right: 16px;
+  transform: rotate(90deg);
+}
+
+.buzzo-prompt-design .showassistant {
+  border-radius: 100%;
+  position: relative;
+  display: flex;
+  /* justify-content: center; */
+  /* align-items: center; */
+  cursor: pointer;
+  color: #fff;
+  min-height: 18px;
+  margin: 12px 0 0 31px;
+  padding: 7px 11px;
+  border-radius: 6px;
+  box-shadow: 0 3px 6px 0 rgba(218, 28, 92, 0.4);
+  background-color: #da1c5c;
+  /* bottom: 0px;*/
+  flex-direction: row;
+  align-items: center;
+  font-family: Montserrat;
+  font-size: 14px;
+  font-weight: normal;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1.29;
+  letter-spacing: normal;
+  text-align: right;
+  color: #ffffff;
+}
+
+.actionitems {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.actionbutton {
+  /*display:flex;*/
+  position: relative;
+  /*height:  14px;*/
+  padding: 5.5px 14px;
+  border-radius: 6px;
+  background-color: #e8497f;
+  font-family: BuzzoMontserrat;
+  font-size: 13px;
+  font-weight: 600;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1.5;
+  letter-spacing: normal;
+  text-align: right;
+  color: #ffffff;
+  margin-top: 6px;
+  cursor: pointer;
+  width: fit-content;
+  box-shadow: 0 3px 6px 0 rgb(0 0 0 / 0.3);
+}
+
+.helpmessage {
+  font-family: BuzzoMontserrat;
+  font-size: 14px;
+  font-weight: normal;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1.29;
+  letter-spacing: normal;
+  text-align: right;
+  color: #ffffff;
+  margin-top: 0px !important;
+  margin-left: 9.5px;
+}
+
+.helpmessage>span {
+  font-weight: 900;
+  font-family: 'BuzzoMontserratBold';
+}

@@ -1,0 +1,60 @@
+.Toast__base {
+  width: 85%;
+  height: auto;
+  min-height: 70px;
+  border-radius: 35px;
+  background-color: rgba(0, 0, 0, 0.85);
+  box-shadow: 0 4px 6px 0 rgba(0, 0, 0, 0.5);
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 85px;
+  margin: auto;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+}
+.Toast__textHolder {
+  width: 100%;
+  height: auto;
+  font-size: 14px;
+  font-family: regular;
+  color: #fff;
+  line-height: 21px;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  padding: 15px 40px;
+}
+@media screen and (min-width: 1025px) {
+  .Toast__base {
+    width: 30%;
+  }
+}
+
+.RatingSubmitSuccessToast__toastContainer {
+  width: 213px;
+  height: auto;
+  min-height: 143px;
+  border-radius: 4.5px;
+  background-color: rgba(33, 33, 33, 0.7);
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 300px;
+  margin: auto;
+  z-index: 1000;
+  display: flex;
+	align-items: center;
+	flex-direction: column;
+  color: #fff;
+  -webkit-backdrop-filter: blur(2.2px);
+  backdrop-filter: blur(2.2px);
+}
+.RatingSubmitSuccessToast__ratingSuccessStar{
+	margin: 20px 0;
+}
+.RatingSubmitSuccessToast__successMessage{
+  font-size: 14px;
+  font-family: regular;
+}
